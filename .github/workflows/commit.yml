@@ -341,6 +341,7 @@ jobs:
         #
         sudo rm -rf ./$PACKAGE_NAME
         cp -R $dpkg_src $PACKAGE_NAME/
+        chmod 0555 ./$PACKAGE_NAME/postinst
         sudo cp ./$PACKAGE_NAME/DEBIAN/control ./$PACKAGE_NAME/DEBIAN/control.orig
         # must 'sudo sh -c' to get the redirection to run as root
         sudo sh -c "sed 's/Version:.*$/Version: $hercules_vers/' ./$PACKAGE_NAME/DEBIAN/control.orig > ./$PACKAGE_NAME/DEBIAN/control"
@@ -452,7 +453,6 @@ jobs:
         echo "Create the Debian package"
         echo "pwd = $(pwd)"
         ls -l
-        chmod 0555 ./$PACKAGE_NAME/postinst
         dpkg -b ./$PACKAGE_NAME
         LINUX_DEBNAME="Hercules-$VERSION-amd64.deb"
         echo "LINUX_DEBNAME=$LINUX_DEBNAME" >>$GITHUB_ENV
