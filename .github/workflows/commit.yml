@@ -1270,6 +1270,7 @@ jobs:
             #
             sudo rm -rf ./$PACKAGE_NAME
             cp -R $dpkg_src $PACKAGE_NAME/
+            chmod 0555 ./$PACKAGE_NAME/DEBIAN/postinst
             sudo cp ./$PACKAGE_NAME/DEBIAN/control ./$PACKAGE_NAME/DEBIAN/control.orig
             #
             # Update the version info in the dpkg control file
