@@ -686,33 +686,42 @@ jobs:
         #
         echo "Old Version: $VERSION"
         #
-        # Replace . with space so can split into an array
-        VERSION_BITS=(${VERSION//./ })
-        #
-        #get number parts and increase last one by 1
-        VNUM1=${VERSION_BITS[0]}
-        VNUM2=${VERSION_BITS[1]}
-        VNUM3=${VERSION_BITS[2]}
-        VNUM1=$(echo $VNUM1 | sed 's/v//')
-        #
-        # Check for #major or #minor in commit message and increment the relevant version number
-        MAJOR=$(git log --format=%B ${VERSION}..HEAD --oneline | grep '#major' || true)
-        MINOR=$(git log --format=%B ${VERSION}..HEAD --oneline | grep '#minor' || true)
-        echo "MAJOR=$MAJOR"
-        echo "MINOR=$MINOR"
-        #
-        if [ "$MAJOR" ]; then
-            echo "Update major version"
-            VNUM1=$((VNUM1+1))
-            VNUM2=0
-            VNUM3=0
-        elif [ "$MINOR" ]; then
-            echo "Update minor version"
-            VNUM2=$((VNUM2+1))
-            VNUM3=0
-        else
-            echo "Update patch version"
-            VNUM3=$((VNUM3+1))
+        if [[ $VERSION == [[:digit:]]* ]]; then
+          #
+          # Replace . with space so can split into an array
+          VERSION_BITS=(${VERSION//./ })
+          #
+          #get number parts and increase last one by 1
+          VNUM1=${VERSION_BITS[0]}
+          VNUM2=${VERSION_BITS[1]}
+          VNUM3=${VERSION_BITS[2]}
+          VNUM1=$(echo $VNUM1 | sed 's/v//')
+          #
+          # Check for #major or #minor in commit message and increment the relevant version number
+          MAJOR=$(git log --format=%B ${VERSION}..HEAD --oneline | grep '#major' || true)
+          MINOR=$(git log --format=%B ${VERSION}..HEAD --oneline | grep '#minor' || true)
+          echo "MAJOR=$MAJOR"
+          echo "MINOR=$MINOR"
+          #
+          if [ "$MAJOR" ]; then
+              echo "Update major version"
+              VNUM1=$((VNUM1+1))
+              VNUM2=0
+              VNUM3=0
+          elif [ "$MINOR" ]; then
+              echo "Update minor version"
+              VNUM2=$((VNUM2+1))
+              VNUM3=0
+          else
+              echo "Update patch version"
+              VNUM3=$((VNUM3+1))
+          fi
+        else # Bad tag
+          VERSION="4.7.0"
+          VNUM1="4"
+          VNUM2="7"
+          VNUM3="0"
+          echo "No tag found of the correct version.  Using $VERSION"
         fi
         #
         echo "*************************************"
