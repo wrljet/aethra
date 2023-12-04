@@ -438,7 +438,7 @@ jobs:
         #sudo cp /usr/local/lib/libh* ./usr/local/lib
         #sudo cp -R /usr/local/lib/hercules ./usr/local/lib/hercules
         echo
-        pwd
+        echo "pwd = $(pwd)"
         ls
         ls -R --format=horizontal ./usr/local
         echo
@@ -450,7 +450,9 @@ jobs:
         sudo rm -rf /usr/local/$PACKAGE_NAME
         #
         echo "Create the Debian package"
-        pwd
+        echo "pwd = $(pwd)"
+        ls -l
+        chmod 0555 ./$PACKAGE_NAME/postinst
         dpkg -b ./$PACKAGE_NAME
         LINUX_DEBNAME="Hercules-$VERSION-amd64.deb"
         echo "LINUX_DEBNAME=$LINUX_DEBNAME" >>$GITHUB_ENV
