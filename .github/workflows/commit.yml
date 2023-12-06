@@ -434,7 +434,7 @@ jobs:
         echo
         echo "pwd = $(pwd)"
         ls
-        ls -R --format=horizontal ./usr/local
+        ls -R --format=horizontal ./usr
         echo
         popd
         #
