@@ -255,7 +255,7 @@ jobs:
       run: |
         export TZ='America/New_York'
         mkdir build && cd build
-        CFLAGS=" -frecord-gcc-switches" ../configure --enable-optimization="-g -g3 -ggdb3 -O3 -march=x86-64-v2" --enable-custom="Built with GitHub Actions" --prefix=/usr/local --enable-regina-rexx
+        CFLAGS=" -frecord-gcc-switches" ../configure --enable-optimization="-g -g3 -ggdb3 -O3 -march=x86-64-v2" --enable-custom="Built with GitHub Actions" --prefix=/usr --enable-regina-rexx
         ./config.status --config
 
     - name: Make
@@ -274,7 +274,7 @@ jobs:
         cd build
         sudo make install
         #
-        install_prefix=/usr/local
+        install_prefix=/usr
         sudo setcap 'cap_sys_nice=eip' $install_prefix/bin/hercules
         sudo setcap 'cap_sys_nice=eip' $install_prefix/bin/herclin
         sudo setcap 'cap_net_admin+ep' $install_prefix/bin/hercifc
@@ -285,12 +285,12 @@ jobs:
         sudo ldconfig
         hash -r
         cd build
-        /usr/local/bin/hercules && true
+        /usr/bin/hercules && true
 
     - name: List Output
       run: |
-        cd /usr/local/
-        ls -l
+        cd /usr/
+        ls -R --format=horizontal /usr/bin
         # FIXME this takes forever
         # find -type f -exec md5sum '{}' \;
 
@@ -315,7 +315,7 @@ jobs:
         LINUX_TARBALL="Hercules-$VERSION-Ubuntu-x64.tar.gz"
         echo "LINUX_TARBALL=$LINUX_TARBALL" >>$GITHUB_ENV
         # FIXME skipping building this tarball
-        #tar cfz $LINUX_TARBALL /usr/local/$PACKAGE_NAME
+        #tar cfz $LINUX_TARBALL /usr/$PACKAGE_NAME
 
     - name: Prepare DPKG
       run: |
@@ -342,9 +342,9 @@ jobs:
         chmod 0555 ./$PACKAGE_NAME/DEBIAN/postinst
         sudo cp ./$PACKAGE_NAME/DEBIAN/control ./$PACKAGE_NAME/DEBIAN/control.orig
         # must 'sudo sh -c' to get the redirection to run as root
-        sudo sh -c "sed 's/Version:.*$/Version: $hercules_vers/' ./$PACKAGE_NAME/DEBIAN/control.orig > ./$PACKAGE_NAME/DEBIAN/control"
+        sudo sh -c "sed 's/Version:.*$/Version: $hercules_vers/' ./$PACKAGE_NAME/DEBIAN/control > ./$PACKAGE_NAME/DEBIAN/control"
         #
-        sudo sh -c "sed 's/Architecture:.*$/Architecture: amd64/' ./$PACKAGE_NAME/DEBIAN/control.orig > ./$PACKAGE_NAME/DEBIAN/control"
+        sudo sh -c "sed 's/Architecture:.*$/Architecture: amd64/' ./$PACKAGE_NAME/DEBIAN/control > ./$PACKAGE_NAME/DEBIAN/control"
         #
         cat ./$PACKAGE_NAME/DEBIAN/control
         #
@@ -352,90 +352,90 @@ jobs:
         #
         # Display what got built and installed
         # FIXME this takes forever
-        #ls -R --format=horizontal /usr/local/bin
+        #ls -R --format=horizontal /usr/bin
         #
         pushd $PACKAGE_NAME >/dev/null;
         sudo rm -rf usr
-        sudo mkdir -p ./usr/local/bin
-        # sudo cp -R /usr/local/ ./usr/local/
-        sudo cp /usr/local/bin/cckd2ckd ./usr/local/bin
-        sudo cp /usr/local/bin/cckd642ckd ./usr/local/bin
-        sudo cp /usr/local/bin/cckdcdsk ./usr/local/bin
-        sudo cp /usr/local/bin/cckdcdsk64 ./usr/local/bin
-        sudo cp /usr/local/bin/cckdcomp ./usr/local/bin
-        sudo cp /usr/local/bin/cckdcomp64 ./usr/local/bin
-        sudo cp /usr/local/bin/cckddiag ./usr/local/bin
-        sudo cp /usr/local/bin/cckddiag64 ./usr/local/bin
-        sudo cp /usr/local/bin/cckdmap ./usr/local/bin
-        sudo cp /usr/local/bin/cckdswap ./usr/local/bin
-        sudo cp /usr/local/bin/cckdswap64 ./usr/local/bin
-        sudo cp /usr/local/bin/cfba2fba ./usr/local/bin
-        sudo cp /usr/local/bin/cfba642fba ./usr/local/bin
-        sudo cp /usr/local/bin/ckd2cckd ./usr/local/bin
-        sudo cp /usr/local/bin/ckd2cckd64 ./usr/local/bin
-        sudo cp /usr/local/bin/convto64 ./usr/local/bin
-        sudo cp /usr/local/bin/dasdcat ./usr/local/bin
-        sudo cp /usr/local/bin/dasdconv ./usr/local/bin
-        sudo cp /usr/local/bin/dasdconv64 ./usr/local/bin
-        sudo cp /usr/local/bin/dasdcopy ./usr/local/bin
-        sudo cp /usr/local/bin/dasdcopy64 ./usr/local/bin
-        sudo cp /usr/local/bin/dasdinit ./usr/local/bin
-        sudo cp /usr/local/bin/dasdinit64 ./usr/local/bin
-        sudo cp /usr/local/bin/dasdisup ./usr/local/bin
-        sudo cp /usr/local/bin/dasdlist ./usr/local/bin
-        sudo cp /usr/local/bin/dasdload ./usr/local/bin
-        sudo cp /usr/local/bin/dasdload64 ./usr/local/bin
-        sudo cp /usr/local/bin/dasdls ./usr/local/bin
-        sudo cp /usr/local/bin/dasdpdsu ./usr/local/bin
-        sudo cp /usr/local/bin/dasdseq ./usr/local/bin
-        sudo cp /usr/local/bin/dasdser ./usr/local/bin
-        sudo cp /usr/local/bin/dmap2hrc ./usr/local/bin
-        sudo cp /usr/local/bin/fba2cfba ./usr/local/bin
-        sudo cp /usr/local/bin/fba2cfba64 ./usr/local/bin
-        sudo cp /usr/local/bin/hercifc ./usr/local/bin
-        sudo cp /usr/local/bin/herclin ./usr/local/bin
-        sudo cp /usr/local/bin/hercules ./usr/local/bin
-        sudo cp /usr/local/bin/hetget ./usr/local/bin
-        sudo cp /usr/local/bin/hetinit ./usr/local/bin
-        sudo cp /usr/local/bin/hetmap ./usr/local/bin
-        sudo cp /usr/local/bin/hetupd ./usr/local/bin
-        sudo cp /usr/local/bin/maketape ./usr/local/bin
-        sudo cp /usr/local/bin/regina ./usr/local/bin
-        sudo cp /usr/local/bin/regina-config ./usr/local/bin
-        sudo cp /usr/local/bin/rexx ./usr/local/bin
-        sudo cp /usr/local/bin/rxqueue ./usr/local/bin
-        sudo cp /usr/local/bin/rxstack ./usr/local/bin
-        sudo cp /usr/local/bin/tapecopy ./usr/local/bin
-        sudo cp /usr/local/bin/tapemap ./usr/local/bin
-        sudo cp /usr/local/bin/tapesplt ./usr/local/bin
-        sudo cp /usr/local/bin/tfprint ./usr/local/bin
-        sudo cp /usr/local/bin/tfswap ./usr/local/bin
-        sudo cp /usr/local/bin/txt2card ./usr/local/bin
-        sudo cp /usr/local/bin/vmfplc2 ./usr/local/bin
+        sudo mkdir -p ./usr/bin
+        # sudo cp -R /usr/ ./usr/
+        sudo cp /usr/bin/cckd2ckd ./usr/bin
+        sudo cp /usr/bin/cckd642ckd ./usr/bin
+        sudo cp /usr/bin/cckdcdsk ./usr/bin
+        sudo cp /usr/bin/cckdcdsk64 ./usr/bin
+        sudo cp /usr/bin/cckdcomp ./usr/bin
+        sudo cp /usr/bin/cckdcomp64 ./usr/bin
+        sudo cp /usr/bin/cckddiag ./usr/bin
+        sudo cp /usr/bin/cckddiag64 ./usr/bin
+        sudo cp /usr/bin/cckdmap ./usr/bin
+        sudo cp /usr/bin/cckdswap ./usr/bin
+        sudo cp /usr/bin/cckdswap64 ./usr/bin
+        sudo cp /usr/bin/cfba2fba ./usr/bin
+        sudo cp /usr/bin/cfba642fba ./usr/bin
+        sudo cp /usr/bin/ckd2cckd ./usr/bin
+        sudo cp /usr/bin/ckd2cckd64 ./usr/bin
+        sudo cp /usr/bin/convto64 ./usr/bin
+        sudo cp /usr/bin/dasdcat ./usr/bin
+        sudo cp /usr/bin/dasdconv ./usr/bin
+        sudo cp /usr/bin/dasdconv64 ./usr/bin
+        sudo cp /usr/bin/dasdcopy ./usr/bin
+        sudo cp /usr/bin/dasdcopy64 ./usr/bin
+        sudo cp /usr/bin/dasdinit ./usr/bin
+        sudo cp /usr/bin/dasdinit64 ./usr/bin
+        sudo cp /usr/bin/dasdisup ./usr/bin
+        sudo cp /usr/bin/dasdlist ./usr/bin
+        sudo cp /usr/bin/dasdload ./usr/bin
+        sudo cp /usr/bin/dasdload64 ./usr/bin
+        sudo cp /usr/bin/dasdls ./usr/bin
+        sudo cp /usr/bin/dasdpdsu ./usr/bin
+        sudo cp /usr/bin/dasdseq ./usr/bin
+        sudo cp /usr/bin/dasdser ./usr/bin
+        sudo cp /usr/bin/dmap2hrc ./usr/bin
+        sudo cp /usr/bin/fba2cfba ./usr/bin
+        sudo cp /usr/bin/fba2cfba64 ./usr/bin
+        sudo cp /usr/bin/hercifc ./usr/bin
+        sudo cp /usr/bin/herclin ./usr/bin
+        sudo cp /usr/bin/hercules ./usr/bin
+        sudo cp /usr/bin/hetget ./usr/bin
+        sudo cp /usr/bin/hetinit ./usr/bin
+        sudo cp /usr/bin/hetmap ./usr/bin
+        sudo cp /usr/bin/hetupd ./usr/bin
+        sudo cp /usr/bin/maketape ./usr/bin
+        sudo cp /usr/bin/regina ./usr/bin
+        sudo cp /usr/bin/regina-config ./usr/bin
+        sudo cp /usr/bin/rexx ./usr/bin
+        sudo cp /usr/bin/rxqueue ./usr/bin
+        sudo cp /usr/bin/rxstack ./usr/bin
+        sudo cp /usr/bin/tapecopy ./usr/bin
+        sudo cp /usr/bin/tapemap ./usr/bin
+        sudo cp /usr/bin/tapesplt ./usr/bin
+        sudo cp /usr/bin/tfprint ./usr/bin
+        sudo cp /usr/bin/tfswap ./usr/bin
+        sudo cp /usr/bin/txt2card ./usr/bin
+        sudo cp /usr/bin/vmfplc2 ./usr/bin
         #
-        sudo mkdir -p ./usr/local/lib/hercules
-        sudo cp -R /usr/local/lib/hercules/* ./usr/local/lib/hercules
-        sudo cp /usr/local/lib/libhdt3420_not_mod.la ./usr/local/lib/
-        sudo cp /usr/local/lib/libhdt3420_not_mod.so ./usr/local/lib/
-        sudo cp /usr/local/lib/libhercd.la ./usr/local/lib/
-        sudo cp /usr/local/lib/libhercd.so ./usr/local/lib/
-        sudo cp /usr/local/lib/libherc.la ./usr/local/lib/
-        sudo cp /usr/local/lib/libhercs.la ./usr/local/lib/
-        sudo cp /usr/local/lib/libherc.so ./usr/local/lib/
-        sudo cp /usr/local/lib/libhercs.so ./usr/local/lib/
-        sudo cp /usr/local/lib/libherct.la ./usr/local/lib/
-        sudo cp /usr/local/lib/libherct.so ./usr/local/lib/
-        sudo cp /usr/local/lib/libhercu.la ./usr/local/lib/
-        sudo cp /usr/local/lib/libhercu.so ./usr/local/lib/
+        sudo mkdir -p ./usr/lib/hercules
+        sudo cp -R /usr/lib/hercules/* ./usr/lib/hercules
+        sudo cp /usr/lib/libhdt3420_not_mod.la ./usr/lib/
+        sudo cp /usr/lib/libhdt3420_not_mod.so ./usr/lib/
+        sudo cp /usr/lib/libhercd.la ./usr/lib/
+        sudo cp /usr/lib/libhercd.so ./usr/lib/
+        sudo cp /usr/lib/libherc.la ./usr/lib/
+        sudo cp /usr/lib/libhercs.la ./usr/lib/
+        sudo cp /usr/lib/libherc.so ./usr/lib/
+        sudo cp /usr/lib/libhercs.so ./usr/lib/
+        sudo cp /usr/lib/libherct.la ./usr/lib/
+        sudo cp /usr/lib/libherct.so ./usr/lib/
+        sudo cp /usr/lib/libhercu.la ./usr/lib/
+        sudo cp /usr/lib/libhercu.so ./usr/lib/
         #
-        sudo cp -R /usr/local/share/hercules/ ./usr/local/share/
+        sudo cp -R /usr/share/hercules/ ./usr/share/
         #
-        #sudo mv ./usr/local/lib/hercules/* ./usr/local/lib
+        #sudo mv ./usr/lib/hercules/* ./usr/lib
         #
-        #sudo mkdir -p ./usr/local/lib
+        #sudo mkdir -p ./usr/lib
         #
-        #sudo cp /usr/local/lib/libh* ./usr/local/lib
-        #sudo cp -R /usr/local/lib/hercules ./usr/local/lib/hercules
+        #sudo cp /usr/lib/libh* ./usr/lib
+        #sudo cp -R /usr/lib/hercules ./usr/lib/hercules
         echo
         echo "pwd = $(pwd)"
         ls
@@ -446,7 +446,7 @@ jobs:
         sudo chown root:root -R ./$PACKAGE_NAME
         #
         echo "Delete the temporary 'make install' dir"
-        sudo rm -rf /usr/local/$PACKAGE_NAME
+        sudo rm -rf /usr/$PACKAGE_NAME
         #
         echo "Create the Debian package"
         echo "pwd = $(pwd)"
