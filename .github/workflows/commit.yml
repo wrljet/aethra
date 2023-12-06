@@ -400,11 +400,6 @@ jobs:
         sudo cp /usr/bin/hetmap ./usr/bin
         sudo cp /usr/bin/hetupd ./usr/bin
         sudo cp /usr/bin/maketape ./usr/bin
-        sudo cp /usr/bin/regina ./usr/bin
-        sudo cp /usr/bin/regina-config ./usr/bin
-        sudo cp /usr/bin/rexx ./usr/bin
-        sudo cp /usr/bin/rxqueue ./usr/bin
-        sudo cp /usr/bin/rxstack ./usr/bin
         sudo cp /usr/bin/tapecopy ./usr/bin
         sudo cp /usr/bin/tapemap ./usr/bin
         sudo cp /usr/bin/tapesplt ./usr/bin
@@ -1333,11 +1328,6 @@ jobs:
             sudo cp /usr/local/bin/hetmap ./usr/local/bin
             sudo cp /usr/local/bin/hetupd ./usr/local/bin
             sudo cp /usr/local/bin/maketape ./usr/local/bin
-            sudo cp /usr/local/bin/regina ./usr/local/bin
-            sudo cp /usr/local/bin/regina-config ./usr/local/bin
-            sudo cp /usr/local/bin/rexx ./usr/local/bin
-            sudo cp /usr/local/bin/rxqueue ./usr/local/bin
-            sudo cp /usr/local/bin/rxstack ./usr/local/bin
             sudo cp /usr/local/bin/tapecopy ./usr/local/bin
             sudo cp /usr/local/bin/tapemap ./usr/local/bin
             sudo cp /usr/local/bin/tapesplt ./usr/local/bin
