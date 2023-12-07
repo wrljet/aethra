@@ -1288,8 +1288,17 @@ jobs:
             sudo sh -c "sed 's/Version:.*$/Version: $HERCULES_VERS/' ./$PACKAGE_NAME/DEBIAN/control.orig > ./$PACKAGE_NAME/DEBIAN/control.tmp"
             #
             # Update the CPU architecture info in the dpkg control file
+            #
+            # aarch64 needs to be arm64
+            matrix_arch=${{ matrix.arch }}
+            case "$matrix_arch" in
+                aarch64*)
+                    matrix_arch=arm64
+                    ;;
+            esac
+            #
             # Must 'sudo sh -c' to get the redirection to run as root
-            sudo sh -c "sed 's/Architecture:.*$/Architecture: ${{ matrix.arch}}/' ./$PACKAGE_NAME/DEBIAN/control.tmp > ./$PACKAGE_NAME/DEBIAN/control"
+            sudo sh -c "sed 's/Architecture:.*$/Architecture: $matrix_arch/' ./$PACKAGE_NAME/DEBIAN/control.tmp > ./$PACKAGE_NAME/DEBIAN/control"
             #
             cat ./$PACKAGE_NAME/DEBIAN/control
             #
