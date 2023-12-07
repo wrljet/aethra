@@ -5,8 +5,8 @@ class HerculesAethraDevelop < Formula
   desc "Hercules-Aethra Develop Branch, under The Q Public License"
   homepage "https://github.com/Hercules-Aethra/aethra"
 # URL to binaries tarball is of this form:
-# https://github.com/wrljet/hyperion/releases/download/4.7.0.11167-Aethra-DEV-g6aec5b66/Hercules-4.7.0.11167-Aethra-DEV-g6aec5b66-macOS.tar.gz
-  url "https://github.com/wrljet/hyperion/releases/download/4.7.0.11167-Aethra-DEV-g6aec5b66/Hercules-4.7.0.11167-Aethra-DEV-g6aec5b66-macOS.tar.gz"
+# https://github.com/wrljet/aethra/releases/download/4.7.0.11167-Aethra-DEV-g6aec5b66/Hercules-4.7.0.11167-Aethra-DEV-g6aec5b66-macOS.tar.gz
+  url "https://github.com/wrljet/aethra/releases/download/4.7.0.11167-Aethra-DEV-g6aec5b66/Hercules-4.7.0.11167-Aethra-DEV-g6aec5b66-macOS.tar.gz"
   sha256 "9ff289bb5f24d21942de63740df0ad287b113c15827723a04a4f0b3b44e24cb9"
   license "QPL-1.0"
 
