@@ -13,6 +13,19 @@ run-name: ${{ github.actor }} is doing a develop build
 #          cpu: cortex-a7
 #          base_image: raspios_lite:latest
 #          cpu_info: cpuinfo/raspberrypi_3b
+#
+#        - arch: aarch64
+#          cpu: cortex-a53
+#          cpu_info: cpuinfo/raspberrypi_zero2_w_arm64
+#          cpu_info: cpuinfo/raspberrypi_4b
+#
+# raspios_lite:2022-04-04
+# raspios_lite:2023-05-03
+# raspios_lite:latest (armhf build, default)
+# 
+# raspios_lite_arm64:2022-04-04 (arm64)
+# raspios_lite_arm64:2023-05-03 (arm64)
+# raspios_lite_arm64:latest (arm64)
 
 # Uploaded artifacts, for example:
 # Windows
@@ -950,12 +963,16 @@ jobs:
 
     strategy:
       matrix:
-        arch: [aarch64]
+        arch: [armv7l, aarch64]
         include:
+        - arch: armv7l
+          cpu: cortex-a7
+          base_image: raspios_lite:latest
+          cpu_info: cpuinfo/raspberrypi_3b
         - arch: aarch64
           cpu: cortex-a53
-          base_image: raspios_lite_arm64:2022-04-04
-          cpu_info: cpuinfo/raspberrypi_zero2_w_arm64
+          base_image: raspios_lite_arm64:latest
+          cpu_info: cpuinfo/raspberrypi_4b
 
     steps:
     - name: pguyot ARM Runner
@@ -1370,7 +1387,7 @@ jobs:
             echo "Create the Debian package"
             pwd
             dpkg -b ./$PACKAGE_NAME
-            LINUX_DEBNAME="Hercules-$VERSION-aarch64.deb"
+            LINUX_DEBNAME="Hercules-$VERSION-${{ matrix.cpu }}.deb"
             echo "LINUX_DEBNAME=$LINUX_DEBNAME"
             mv "$PACKAGE_NAME.deb" $LINUX_DEBNAME
             ls -lh $LINUX_DEBNAME
