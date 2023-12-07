@@ -1289,11 +1289,15 @@ jobs:
             #
             # Update the CPU architecture info in the dpkg control file
             #
-            # aarch64 needs to be arm64
+            # aarch64 => arm64
+            # armv7l  => armhf
             matrix_arch=${{ matrix.arch }}
             case "$matrix_arch" in
                 aarch64*)
                     matrix_arch=arm64
+                    ;;
+                armv7l*)
+                    matrix_arch=armhf
                     ;;
             esac
             #
