@@ -1289,7 +1289,7 @@ jobs:
             #
             # Update the CPU architecture info in the dpkg control file
             # Must 'sudo sh -c' to get the redirection to run as root
-            sudo sh -c "sed 's/Architecture:.*$/Architecture: arm64/' ./$PACKAGE_NAME/DEBIAN/control.tmp > ./$PACKAGE_NAME/DEBIAN/control"
+            sudo sh -c "sed 's/Architecture:.*$/Architecture: ${{ matrix.arch}}/' ./$PACKAGE_NAME/DEBIAN/control.tmp > ./$PACKAGE_NAME/DEBIAN/control"
             #
             cat ./$PACKAGE_NAME/DEBIAN/control
             #
@@ -1387,7 +1387,7 @@ jobs:
             echo "Create the Debian package"
             pwd
             dpkg -b ./$PACKAGE_NAME
-            LINUX_DEBNAME="Hercules-$VERSION-${{ matrix.cpu }}.deb"
+            LINUX_DEBNAME="Hercules-$VERSION-${{ matrix.arch }}.deb"
             echo "LINUX_DEBNAME=$LINUX_DEBNAME"
             mv "$PACKAGE_NAME.deb" $LINUX_DEBNAME
             ls -lh $LINUX_DEBNAME
