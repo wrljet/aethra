@@ -976,7 +976,7 @@ jobs:
         - arch: rpi5b
           cpu: cortex-a76
           base_image: raspios_lite_arm64:latest
-          cpu_info: cpuinfo/raspberrypi_5b
+          cpu_info: cpuinfo/raspberrypi_4b
 
     steps:
     - name: pguyot ARM Runner
