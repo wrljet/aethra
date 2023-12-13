@@ -980,11 +980,11 @@ jobs:
 
     steps:
     - name: composite test
-        uses: wrljet/hello-world-composite-action@v1
-        with:
-          who-to-greet: 'Mona the Octocat'
-      - run: echo random-number ${{ steps.foo.outputs.random-number }}
-        shell: bash
+      uses: wrljet/hello-world-composite-action@v1
+      with:
+        who-to-greet: 'Mona the Octocat'
+    - run: echo random-number ${{ steps.foo.outputs.random-number }}
+      shell: bash
 
     - name: pguyot ARM Runner
       uses: pguyot/arm-runner-action@v2
