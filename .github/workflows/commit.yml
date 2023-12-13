@@ -46,7 +46,7 @@ jobs:
   build-release:
 
     runs-on: ubuntu-latest
-    needs: [build-linux, build-macos, build-windows, build-arm64]
+    needs: [build-linux, build-macos, build-windows, build-arm]
 
     steps:
     - name: Check PWD
@@ -957,7 +957,7 @@ jobs:
         name: "release.zips"
 
 ########
-  build-arm64:
+  build-arm:
 
     runs-on: ubuntu-latest
 
@@ -973,6 +973,10 @@ jobs:
           cpu: cortex-a53
           base_image: raspios_lite_arm64:2022-04-04
           cpu_info: cpuinfo/raspberrypi_4b
+        - arch: rpi5b
+          cpu: cortex-a76
+          base_image: raspios_lite_arm64:latest
+          cpu_info: cpuinfo/raspberrypi_5b
 
     steps:
     - name: pguyot ARM Runner
