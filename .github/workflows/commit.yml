@@ -979,7 +979,7 @@ jobs:
           cpu_info: cpuinfo/raspberrypi_4b
 
     steps:
-    - name: composite test
+    - id: foo
       uses: wrljet/hello-world-composite-action@v1
       with:
         who-to-greet: 'Mona the Octocat'
