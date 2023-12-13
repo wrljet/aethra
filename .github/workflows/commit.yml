@@ -963,7 +963,7 @@ jobs:
 
     strategy:
       matrix:
-        arch: [armv7l, aarch64]
+        arch: [armv7l, aarch64,rpi5b]
         include:
         - arch: armv7l
           cpu: cortex-a7
