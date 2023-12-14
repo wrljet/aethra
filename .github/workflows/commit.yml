@@ -985,7 +985,7 @@ jobs:
 
     steps:
     - id: foo
-      uses: wrljet/hello-world-composite-action@v1
+      uses: wrljet/action-composite-hello-world@v1
       with:
         who-to-greet: 'Mona the Octocat'
     - run: echo random-number ${{ steps.foo.outputs.random-number }}
