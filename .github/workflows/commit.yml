@@ -19,6 +19,11 @@ run-name: ${{ github.actor }} is doing a develop build
 #          cpu_info: cpuinfo/raspberrypi_zero2_w_arm64
 #          cpu_info: cpuinfo/raspberrypi_4b
 #
+#        - arch: rpi5b
+#          cpu: cortex-a76
+#          base_image: raspios_lite_arm64:latest
+#          cpu_info: cpuinfo/raspberrypi_4b
+#
 # raspios_lite:2022-04-04
 # raspios_lite:2023-05-03
 # raspios_lite:latest (armhf build, default)
@@ -92,10 +97,10 @@ jobs:
         echo "VERSION=$VERSION" >>$GITHUB_ENV
         #
         # Artifact Names
-        LINUX_TARBALL="Hercules-$VERSION-Ubuntu-x64.tar.gz"
-        echo "LINUX_TARBALL=$LINUX_TARBALL" >>$GITHUB_ENV
-        LINUX_DEBNAME="Hercules-$VERSION.deb"
-        echo "LINUX_DEBNAME=$LINUX_DEBNAME" >>$GITHUB_ENV
+        #LINUX_TARBALL="Hercules-$VERSION-Ubuntu-x64.tar.gz"
+        #echo "LINUX_TARBALL=$LINUX_TARBALL" >>$GITHUB_ENV
+        #LINUX_DEBNAME="Hercules-$VERSION.deb"
+        #echo "LINUX_DEBNAME=$LINUX_DEBNAME" >>$GITHUB_ENV
         #
         # Release names are of the form:
         # Hercules-Aethra build 4.7.0.11032-Aethra-DEV-g4f007805
@@ -131,8 +136,8 @@ jobs:
     - name: Review binaries
       run: |
         ls -lh release.zips
-        echo "LINUX_TARBALL: ${{env.LINUX_TARBALL}}"
-        echo "LINUX_DEBNAME: ${{env.LINUX_DEBNAME}}"
+        #echo "LINUX_TARBALL: ${{env.LINUX_TARBALL}}"
+        #echo "LINUX_DEBNAME: ${{env.LINUX_DEBNAME}}"
 
     - name: Generate checksums
       uses: jmgilman/actions-generate-checksum@v1
@@ -325,7 +330,7 @@ jobs:
         echo "VERSION=$VERSION" >>$GITHUB_ENV
         #
         # Name and create tarball
-        LINUX_TARBALL="Hercules-$VERSION-Ubuntu-x64.tar.gz"
+        LINUX_TARBALL="Hercules-$VERSION-Ubuntu-x64-v2.tar.gz"
         echo "LINUX_TARBALL=$LINUX_TARBALL" >>$GITHUB_ENV
         # FIXME skipping building this tarball
         #tar cfz $LINUX_TARBALL /usr/$PACKAGE_NAME
@@ -963,7 +968,7 @@ jobs:
 
     strategy:
       matrix:
-        arch: [armv7l, aarch64,rpi5b]
+        arch: [armv7l, aarch64, aarch64-latest]
         include:
         - arch: armv7l
           cpu: cortex-a7
@@ -973,8 +978,8 @@ jobs:
           cpu: cortex-a53
           base_image: raspios_lite_arm64:2022-04-04
           cpu_info: cpuinfo/raspberrypi_4b
-        - arch: rpi5b
-          cpu: cortex-a76
+        - arch: aarch64-latest
+          cpu: cortex-a53
           base_image: raspios_lite_arm64:latest
           cpu_info: cpuinfo/raspberrypi_4b
 
