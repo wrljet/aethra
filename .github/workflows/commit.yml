@@ -984,11 +984,11 @@ jobs:
           cpu_info: cpuinfo/raspberrypi_4b
 
     steps:
-    - id: foo
+    - id: goo
       uses: wrljet/action-composite-hello-world@v1
       with:
         who-to-greet: 'Mona the Octocat'
-    - run: echo random-number ${{ steps.foo.outputs.random-number }}
+    - run: echo random-number ${{ steps.goo.outputs.random-number }}
       shell: bash
 
     - name: pguyot ARM Runner
