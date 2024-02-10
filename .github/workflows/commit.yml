@@ -2,7 +2,7 @@ name: Commit Build
 run-name: ${{ github.actor }} is doing a develop build
 
 # Build Hercules-Aethra from the latest commit
-# WRL 04 DEC 2023
+# WRL 10 FEB 2024
 
 #        arch: [armv6l, armv7l, aarch64]
 #        - arch: armv6l
@@ -798,7 +798,7 @@ jobs:
         gsed -i -e "s/  sha256 \"[0-9a-f]\+\"/  sha256 \"$SHA256\"/" aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb
         #
         head aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb
-        cp aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb aethra/packagers/macOS/Homebrew/Hercules-$HERCULES_VERSION-macOS.rb
+        cp aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb aethra/packagers/macOS/Homebrew/Hercules-$HERCULES_VERSION-macOS-amd64.rb
         #
         popd
 
@@ -806,7 +806,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: "release.zips"
-        path: "${{env.ARTIFACT_DIR}}/Hercules-${{env.HERCULES_VERSION}}-macOS.tar.gz"
+        path: "${{env.ARTIFACT_DIR}}/Hercules-${{env.HERCULES_VERSION}}-macOS-amd64.tar.gz"
 
     - name: Upload Homebrew formula
       uses: actions/upload-artifact@v2
