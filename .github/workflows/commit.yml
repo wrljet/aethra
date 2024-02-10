@@ -752,14 +752,14 @@ jobs:
         # cp -R ~/sdl-hercules-binaries-macOS/ sdl-hercules-binaries-macOS/
         #
         rm -rf sdl-hercules-binaries-macOS/.git
-        tar cfz $ARTIFACT_DIR/Hercules-$HERCULES_VERSION-macOS.tar.gz sdl-hercules-binaries-macOS
+        tar cfz $ARTIFACT_DIR/Hercules-$HERCULES_VERSION-macOS-amd64.tar.gz sdl-hercules-binaries-macOS
         ls -lh $ARTIFACT_DIR 
         echo "*************************************"
         #
         # Examine the tarball
         #
         echo "tar tvfz | (head && tail)"
-        tar tvfz $ARTIFACT_DIR/Hercules-$HERCULES_VERSION-macOS.tar.gz | (head && tail)
+        tar tvfz $ARTIFACT_DIR/Hercules-$HERCULES_VERSION-macOS-amd64.tar.gz | (head && tail)
         #
         popd
         #------------------------------------------------------------------------------
@@ -780,7 +780,7 @@ jobs:
         # https://github.com/wrljet/aethra/releases/download/4.7.0.11167-Aethra-DEV-g6aec5b66/sdl-hercules-binaries-macOS-4.7.0.11167-Aethra-DEV-g6aec5b66.tar.gz
         #
         grep url aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb
-        gsed -i -e "s/releases\/download\/.*\"$/releases\/download\/$HERCULES_VERSION\/Hercules-$HERCULES_VERSION-macOS.tar.gz\"/g" aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb
+        gsed -i -e "s/releases\/download\/.*\"$/releases\/download\/$HERCULES_VERSION\/Hercules-$HERCULES_VERSION-macOS-amd64.tar.gz\"/g" aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb
         #
         cat aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb
         #
@@ -789,7 +789,7 @@ jobs:
         #
         # Get new checksum into the formula
         #
-        SHA256=$(shasum -a 256 $ARTIFACT_DIR/Hercules-$HERCULES_VERSION-macOS.tar.gz)
+        SHA256=$(shasum -a 256 $ARTIFACT_DIR/Hercules-$HERCULES_VERSION-macOS-amd64.tar.gz)
         echo "New sha256: $SHA256"
         SHA256=${SHA256%% *}
         echo "First word of sha256sum: ${SHA256%% *}"
