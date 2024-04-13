@@ -2,7 +2,7 @@ name: Commit Build
 run-name: ${{ github.actor }} is doing a develop build
 
 # Build Hercules-Aethra from the latest commit
-# WRL 10 FEB 2024
+# WRL 13 APR 2024
 
 #        arch: [armv6l, armv7l, aarch64]
 #        - arch: armv6l
