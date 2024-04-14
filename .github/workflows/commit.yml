@@ -824,7 +824,7 @@ jobs:
         node-version: [12.x]
 
     steps:
-    - uses: actions/checkout@v3.3.0
+    - uses: actions/checkout@v3.6.0
       with:
         # Number of commits to fetch. 0 indicates all history for all branches and tags.
         # Default: 1
