@@ -952,7 +952,7 @@ jobs:
         dir ..
 
     - name: Upload build
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3.1.3
       with:
         path: "${{env.WINDOWS_ZIPFILE}}"
         name: "release.zips"
