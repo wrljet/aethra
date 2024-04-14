@@ -820,7 +820,7 @@ jobs:
     runs-on: windows-2022 # Windows Server 2022
 
     steps:
-    - uses: actions/checkout@v3.6.0
+    - uses: actions/checkout@v4.1.1
       with:
         # Number of commits to fetch. 0 indicates all history for all branches and tags.
         # Default: 1
