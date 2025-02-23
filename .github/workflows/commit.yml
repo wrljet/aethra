@@ -512,7 +512,7 @@ jobs:
 ########
   build-macos:
 
-    runs-on: macOS-12 # Monterey
+    runs-on: macOS-14 # Sonoma
 
     strategy:
       matrix:
