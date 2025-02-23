@@ -2,7 +2,8 @@ name: Commit Build
 run-name: ${{ github.actor }} is doing a develop build
 
 # Build Hercules-Aethra from the latest commit
-# WRL 13 APR 2024 (testing 23 FEB 2025)
+# WRL 13 APR 2024
+# WRL 23 FEB 2025 - Update to upload-artifact v4
 
 #        arch: [armv6l, armv7l, aarch64]
 #        - arch: armv6l
@@ -503,7 +504,7 @@ jobs:
         curl -sL "$LINUX_DEBNAME" | shasum -a 256 | cut -d " " -f 1
 
     - name: Upload dpkg
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         path: "${{env.LINUX_DEBNAME}}"
         name: "release.zips"
@@ -803,13 +804,13 @@ jobs:
         popd
 
     - name: Upload macOS tarball
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: "release.zips"
         path: "${{env.ARTIFACT_DIR}}/Hercules-${{env.HERCULES_VERSION}}-macOS-amd64.tar.gz"
 
     - name: Upload Homebrew formula
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: "release.zips"
         path: "packagers/macOS/Homebrew/Hercules-*.rb"
@@ -1474,7 +1475,7 @@ jobs:
         echo "VERSION=$VERSION" >>$GITHUB_ENV
 
     - name: Upload dpkg
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         path: "/tmp/uploads/Hercules*.deb"
         name: "release.zips"
