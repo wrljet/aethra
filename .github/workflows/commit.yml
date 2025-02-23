@@ -812,8 +812,11 @@ jobs:
     - name: Upload Homebrew formula
       uses: actions/upload-artifact@v4
       with:
+        path: "aethra/packagers/macOS/Homebrew/Hercules-*.rb"
         name: "release.zips"
-        path: "packagers/macOS/Homebrew/Hercules-*.rb"
+#     with:
+#       path: "${{env.WINDOWS_ZIPFILE}}"
+#       name: "release.zips"
 
 ########
   build-windows:
