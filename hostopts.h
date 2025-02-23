@@ -1,11 +1,7 @@
-/* HOSTOPTS.H   (C) Copyright "Fish" (David B. Trout), 2005-2012     */
-/*              Host-specific features and options for Hercules      */
+/* HOSTOPTS.H   Host-specific features and options for Hercules      */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
-
-//   This header file is #included by 'featall.h' and 'hercules.h'
+/*  SPDX-FileCopyrightText: Copyright "Fish" (David B. Trout)        */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*---------------------------------------------------------------------
 
@@ -314,7 +310,7 @@
 /*-------------------------------------------------------------------*/
 /* Hard-coded GNU Linux-specific features and options...             */
 /*-------------------------------------------------------------------*/
-#elif defined(__gnu_linux__)            /* GNU Linux options         */
+#elif defined(__gnu_linux__) || defined(__linux__) /* Linux options  */
 
 #define DLL_IMPORT              extern
 #define DLL_EXPORT

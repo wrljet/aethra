@@ -1,10 +1,9 @@
-/* HOSTINFO.C   (C) Copyright "Fish" (David B. Trout), 2002-2012     */
-/*              (C) Copyright TurboHercules, SAS 2010-2011           */
-/*                 Hercules functions to set/query host information  */
+/* HOSTINFO.C      Hercules functions to set/query host information  */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   "Fish" (David B. Trout)                  */
+/*  SPDX-FileContributor:   TurboHercules, SAS                       */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* functions to set/query host system information                    */
@@ -267,12 +266,13 @@ DLL_EXPORT char* format_hostinfo ( HOST_INFO*  pHostInfo,
         }
 
 #if defined( OPTION_LONG_HOSTINFO )
+        // (long: show host version too)
         snprintf( pszHostInfoStrBuff, nHostInfoStrBuffSiz,
-            "Running on %s %s-%s. %s, %s%s",
+            "Running on: %s %s-%s. %s, %s%s",
             pHostInfo->nodename,
             pHostInfo->sysname,
             pHostInfo->release,
-            pHostInfo->version,     // (show host version too)
+            pHostInfo->version,     // (host version)
             pHostInfo->machine,
             num_procs
         );

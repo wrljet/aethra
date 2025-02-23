@@ -1,11 +1,9 @@
-/* HSCMISC.C    (C) Copyright Roger Bowler, 1999-2012                */
-/*              (C) Copyright Jan Jaeger, 1999-2012                  */
-/*              (C) and others 2013-2023                             */
-/*              Miscellaneous System Command Routines                */
+/* HSCMISC.C    Miscellaneous System Command Routines                */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   Jan Jaeger                               */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 #include "hstdinc.h"
 
@@ -1462,20 +1460,45 @@ static void cancel_wait_for_guest_quiesce()
 /*  completely exited beforehand.                                    */
 /*                                                                   */
 /*-------------------------------------------------------------------*/
+/*  Shutdown initialation steps:                                     */
+/*     1. set shutbegin=TRUE to notify logger to synchronize it's    */
+/*        shutdown steps and set system shutdown request             */
+/*     2. short spin-wait for logger to set system shutdown request  */
+/*     3  ensure system shutdown requested                           */
+/*-------------------------------------------------------------------*/
 
 static void do_shutdown_now()
 {
+    int     spincount = 16;           // spin-wait count for logger-thread
+    bool    loggersetshutdown = TRUE; // assume logger sets system shutdown
+
+    ASSERT( !sysblk.shutfini );   // (sanity check)
+    ASSERT( !sysblk.shutdown );   // (sanity check)
+    sysblk.shutfini = FALSE;      // (shutdown NOT finished yet)
+    sysblk.shutdown = FALSE;      // (system shutdown NOT initiated yet)
+    sysblk.shutbegin = TRUE;      // (begin system shutdown)
+
     // "Begin Hercules shutdown"
     WRMSG( HHC01420, "I" );
 
     // (hack to prevent minor message glitch during shutdown)
     fflush( stdout );
     fflush( stderr );
-    USLEEP( 10000 );
 
-    ASSERT( !sysblk.shutfini );   // (sanity check)
-    sysblk.shutfini = FALSE;      // (shutdown NOT finished yet)
-    sysblk.shutdown = TRUE;       // (system shutdown initiated)
+    // spin-wait for logger to initiate system shutdown
+    while ( !sysblk.shutdown && spincount-- )
+    {
+        log_wakeup( NULL );
+        USLEEP( 5000 );
+        //LOGMSG("hsmisc.c: shutdown spin-wait on logger: count: %d, shutdown: %d\n", spincount, (int) sysblk.shutdown);
+    }
+
+    // safety measure: ensure system shutdown requested
+    if ( !sysblk.shutdown )
+    {
+        sysblk.shutdown = TRUE;       // (system shutdown initiated)
+        loggersetshutdown = FALSE;    // logger didn't set system shutdown
+    }
 
     /* Wakeup I/O subsystem to start I/O subsystem shutdown */
     {
@@ -1495,9 +1518,15 @@ static void do_shutdown_now()
     fflush( stderr );
     USLEEP( 10000 );
 
+    // if logger didn't set shutdown, handle unredirect
+    if ( !loggersetshutdown )
+    {
+
 #if !defined( _MSVC_ )
-    logger_unredirect();
+                logger_unredirect();
 #endif
+
+    }
 
     hdl_atexit();
 

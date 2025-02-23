@@ -1,10 +1,7 @@
-/* HSCUTL.H     (C) Copyright Roger Bowler, 1999-2012                */
-/*              (C) and others 2013-2023                             */
-/*              Host-specific functions for Hercules                 */
+/* HSCUTL.H     Host-specific functions for Hercules                 */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Roger Bowler                   */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* HSCUTL.H   --   Implementation of functions used in hercules that */
@@ -157,7 +154,7 @@ strlcat(char *dst, const char *src, size_t siz);
 #define USLEEP( _u ) herc_usleep( _u, __FILE__, __LINE__ )
 HUT_DLL_IMPORT int herc_usleep( useconds_t usecs, const char* file, int line );
 #define USLEEP_MIN 1
-#define NANOSLEEP_EINTR_RETRY_WARNING_TRESHOLD 16
+#define NANOSLEEP_EINTR_RETRY_WARNING_TRESHOLD 256
 
 /* Subtract/add gettimeofday struct timeval */
 HUT_DLL_IMPORT int timeval_subtract (struct timeval *beg_timeval, struct timeval *end_timeval, struct timeval *dif_timeval);

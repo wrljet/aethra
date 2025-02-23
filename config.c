@@ -1,10 +1,7 @@
-/* CONFIG.C     (C) Copyright Jan Jaeger, 2000-2012                  */
-/*              (C) and others 2013-2023                             */
-/*              Device and Storage configuration functions           */
+/* CONFIG.C     Device and Storage configuration functions           */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Jan Jaeger                     */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* The original configuration builder is now called bldcfg.c         */
@@ -1155,7 +1152,9 @@ int deconfigure_cpu( int target_cpu )
 
             /* Wait for cpu_thread to completely exit */
             join_thread( sysblk.cputid[ target_cpu ], NULL );
-            detach_thread( sysblk.cputid[ target_cpu ]);
+#if defined( OPTION_FTHREADS )
+            detach_thread( sysblk.cputid[ target_cpu ]);    // only needed for Fish threads
+#endif
 
             /*-----------------------------------------------------------*/
             /* Note: While this is the logical place to cleanup and to   */
@@ -2172,18 +2171,12 @@ int parse_and_attach_devices(const char *sdevnum,
                if(rc!=0)
                {
                    baddev=1;
-                   break;
                }
-            }
-            if(baddev)
-            {
-                break;
             }
         }
 
         free(newargv);
         free(orig_newargv);
-
         free(dnd.da);
         return baddev?-1:0;
 }

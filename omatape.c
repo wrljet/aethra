@@ -1,13 +1,10 @@
-/* OMATAPE.C    (C) Copyright Roger Bowler, 1999-2012                */
-/*              Hercules Tape Device Handler for OMATAPE             */
+/* OMATAPE.C    Hercules Tape Device Handler for OMATAPE             */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
-
-/* Original Author: Roger Bowler                                     */
-/* Prime Maintainer: Ivan Warren                                     */
-/* Secondary Maintainer: "Fish" (David B. Trout)                     */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   Ivan Warren                              */
+/*  SPDX-FileContributor:   "Fish" (David B. Trout)                  */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* This module contains the OMATAPE emulated tape format support.    */
@@ -76,16 +73,11 @@ BYTE            c;                      /* Work area for sscanf      */
             continue;           /* then just count it  */
 
         /* Check that the first record is a @TDF header */
-        if (0
-            || memcmp( str, "@TDF", 4 ) != 0
-            || (1
-                && str[4] != '\r'
-                && str[4] != '\n'
-               )
-        )
+        if (memcmp( str, "@TDF", 4 ) != 0)
         {
-            // "%1d:%04X Tape file %s, type %s: not a valid @TDF file"
-            WRMSG( HHC00206, "E", LCSS_DEVNUM, dev->filename, "OMA" );
+            // "%1d:%04X Tape file %s, type %s: not a valid @TDF file: %s"
+            WRMSG( HHC00206, "E", LCSS_DEVNUM, dev->filename, "OMA",
+                "Invalid or no @TDF header present" );
             fclose( oma );
             return -1;
         }
@@ -103,8 +95,8 @@ BYTE            c;                      /* Work area for sscanf      */
     /* Check for empty file or file with only @TDF statement */
     if (filecount < 2)
     {
-        // "%1d:%04X Tape file %s, type %s: not a valid @TDF file"
-        WRMSG( HHC00206, "E", LCSS_DEVNUM, dev->filename, "OMA" );
+        // "%1d:%04X Tape file %s, type %s: not a valid @TDF file: %s"
+        WRMSG( HHC00206, "E", LCSS_DEVNUM, dev->filename, "OMA", "No tape files listed");
         fclose( oma );
         return -1;
     }

@@ -1,10 +1,7 @@
-/* SR.C         (c) Copyright Greg Smith, 2005-2012                  */
-/*              (C) and others 2013-2021                             */
-/*              Suspend/Resume a Hercules session                    */
+/* SR.C         Suspend/Resume a Hercules session                    */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Greg Smith                     */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 #include "hstdinc.h"
 
@@ -222,6 +219,7 @@ BYTE     psw[16];
     SR_WRITE_VALUE (file,SR_SYS_SERVPARM,sysblk.servparm,sizeof(sysblk.servparm));
     SR_WRITE_VALUE (file,SR_SYS_SIGINTREQ,sysblk.sigintreq,1);
     SR_WRITE_VALUE (file,SR_SYS_IPLED,sysblk.ipled,1);
+    SR_WRITE_VALUE (file,SR_SYS_SFCMD,sysblk.sfcmd,1);
     SR_WRITE_STRING(file,SR_SYS_LOADPARM,str_loadparm());
     SR_WRITE_VALUE (file,SR_SYS_INTS_STATE,sysblk.ints_state,sizeof(sysblk.ints_state));
     SR_WRITE_HDR(file, SR_DELIMITER, 0);
@@ -709,6 +707,11 @@ int      numconfdev=0;
         case SR_SYS_IPLED:
             SR_READ_VALUE(file, len, &rc, sizeof(rc));
             sysblk.ipled = rc;
+            break;
+
+        case SR_SYS_SFCMD:
+            SR_READ_VALUE(file, len, &rc, sizeof(rc));
+            sysblk.sfcmd = rc;
             break;
 
         case SR_SYS_LOADPARM:

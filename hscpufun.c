@@ -1,13 +1,11 @@
-/* HSCPUFUN.C   (C) Copyright Roger Bowler, 1999-2012                */
-/*              (C) Copyright Jan Jaeger, 1999-2012                  */
-/*              (C) Copyright "Fish" (David B. Trout), 2002-2009     */
-/*              (C) Copyright TurboHercules, SAS 2010-2011           */
-/*              (C) and others 2013-2021                             */
-/*              CPU functions                                        */
+/* HSCPUFUN.C   CPU functions                                        */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   Jan Jaeger                               */
+/*  SPDX-FileContributor:   TurboHercules, SAS                       */
+/*  SPDX-FileContributor:   "Fish" (David B. Trout)                  */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 #include "hstdinc.h"
 
@@ -580,6 +578,14 @@ char*   loadparm     = NULL;            /* Pointer to LOADPARM arg   */
 int ipl_cmd( int argc, char* argv[], char* cmdline )
 {
     const bool clear = false;
+    if (sysblk.sfcmd)
+    {
+        // "System cannot be IPLed once shadow file commands have been issued"
+        // "Hercules needs to be restarted before proceeding"
+        WRMSG( HHC00830, "E" );
+        WRMSG( HHC00831, "W" );
+        return -1;
+    }
     return ipl_cmd2( argc, argv, cmdline, clear );
 }
 
@@ -590,6 +596,14 @@ int ipl_cmd( int argc, char* argv[], char* cmdline )
 int iplc_cmd( int argc, char* argv[], char* cmdline )
 {
     const bool clear = true;
+    if (sysblk.sfcmd)
+    {
+        // "System cannot be IPLed once shadow file commands have been issued"
+        // "Hercules needs to be restarted before proceeding"
+        WRMSG( HHC00830, "E" );
+        WRMSG( HHC00831, "W" );
+        return -1;
+    }
     return ipl_cmd2( argc, argv, cmdline, clear );
 }
 
@@ -1071,36 +1085,54 @@ int stop_cmd_cpu( int argc, char* argv[], char* cmdline )
 
     UPPER_ARGV_0( argv );
 
-    UNREFERENCED(argc);
-    UNREFERENCED(argv);
-    UNREFERENCED(cmdline);
+    UNREFERENCED( argc );
+    UNREFERENCED( argv );
+    UNREFERENCED( cmdline );
 
-    OBTAIN_INTLOCK(NULL);
-
-    if (IS_CPU_ONLINE(sysblk.pcpu))
+    OBTAIN_INTLOCK( NULL );
     {
-        REGS *regs = sysblk.regs[sysblk.pcpu];
-        if ( regs->cpustate != CPUSTATE_STARTED )
+        if (IS_CPU_ONLINE( sysblk.pcpu ))
         {
-            WRMSG(HHC00816, "W", PTYPSTR(sysblk.pcpu), sysblk.pcpu, "started");
-            rc = 1;
+            REGS* regs = sysblk.regs[ sysblk.pcpu ];
+
+            if (regs->cpustate != CPUSTATE_STARTED)
+            {
+                if (1
+                    && regs->cpustate == CPUSTATE_STOPPED
+                    && WAITSTATE( &regs->psw )
+                    && IS_IC_DISABLED_WAIT_PSW( regs )
+                )
+                {
+                    // "Processor %s%02X: processor %sstopped due to disabled wait"
+                    WRMSG( HHC00826, "W", PTYPSTR( sysblk.pcpu ), sysblk.pcpu, "already " );
+                }
+                else
+                {
+                    // "Processor %s%02X: processor is not %s"
+                    WRMSG( HHC00816, "W", PTYPSTR( sysblk.pcpu ), sysblk.pcpu, "started" );
+                }
+                rc = 1;
+            }
+            else
+            {
+                regs->opinterv = 1;
+                regs->cpustate = CPUSTATE_STOPPING;
+
+                ON_IC_INTERRUPT( regs );
+                WAKEUP_CPU( regs );
+
+                // "Processor %s%02X: %s"
+                WRMSG( HHC00834, "I", PTYPSTR(sysblk.pcpu), sysblk.pcpu, "manual state selected" );
+            }
         }
         else
         {
-            regs->opinterv = 1;
-            regs->cpustate = CPUSTATE_STOPPING;
-            ON_IC_INTERRUPT(regs);
-            WAKEUP_CPU (regs);
-            WRMSG( HHC00834, "I", PTYPSTR(sysblk.pcpu), sysblk.pcpu, "manual state selected" );
+            // "Processor %s%02X: processor is not %s"
+            WRMSG( HHC00816, "W", PTYPSTR( sysblk.pcpu ), sysblk.pcpu, "online" );
+            rc = 1;
         }
     }
-    else
-    {
-        WRMSG(HHC00816, "W", PTYPSTR(sysblk.pcpu), sysblk.pcpu, "online");
-        rc = 1;
-    }
-
-    RELEASE_INTLOCK(NULL);
+    RELEASE_INTLOCK( NULL );
 
     return rc;
 }

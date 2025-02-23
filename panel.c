@@ -1,12 +1,12 @@
-/* PANEL.C      (C) Copyright Roger Bowler, 1999-2012                */
-/*              (C) Copyright TurboHercules, SAS 2010-2011           */
-/*              Hercules Control Panel Commands                      */
+/* PANEL.C      Hercules Control Panel Commands                      */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   Jan Jaeger                               */
+/*  SPDX-FileContributor:   TurboHercules, SAS                       */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
-/* z/Architecture support - (C) Copyright Jan Jaeger, 1999-2012      */
+/* z/Architecture support - Copyright Jan Jaeger                     */
 
 /*              Modified for New Panel Display =NP=                  */
 /*-------------------------------------------------------------------*/
@@ -1618,12 +1618,16 @@ DLL_EXPORT void set_panel_colors()
         sysblk.pan_color[ PANC_E_IDX ][ PANC_FG_IDX ] = COLOR_DEFAULT_FG;
         sysblk.pan_color[ PANC_W_IDX ][ PANC_FG_IDX ] = COLOR_DEFAULT_FG;
         sysblk.pan_color[ PANC_D_IDX ][ PANC_FG_IDX ] = COLOR_DEFAULT_FG;
+        sysblk.pan_color[ PANC_S_IDX ][ PANC_FG_IDX ] = COLOR_DEFAULT_FG;
+        sysblk.pan_color[ PANC_A_IDX ][ PANC_FG_IDX ] = COLOR_DEFAULT_FG;
 
         sysblk.pan_color[ PANC_X_IDX ][ PANC_BG_IDX ] = COLOR_DEFAULT_BG;
         sysblk.pan_color[ PANC_I_IDX ][ PANC_BG_IDX ] = COLOR_DEFAULT_BG;
         sysblk.pan_color[ PANC_E_IDX ][ PANC_BG_IDX ] = COLOR_DEFAULT_BG;
         sysblk.pan_color[ PANC_W_IDX ][ PANC_BG_IDX ] = COLOR_DEFAULT_BG;
         sysblk.pan_color[ PANC_D_IDX ][ PANC_BG_IDX ] = COLOR_DEFAULT_BG;
+        sysblk.pan_color[ PANC_S_IDX ][ PANC_BG_IDX ] = COLOR_DEFAULT_BG;
+        sysblk.pan_color[ PANC_A_IDX ][ PANC_BG_IDX ] = COLOR_DEFAULT_BG;
 
         break;
 
@@ -1644,6 +1648,12 @@ DLL_EXPORT void set_panel_colors()
         sysblk.pan_color[ PANC_D_IDX ][ PANC_FG_IDX ] = COLOR_LIGHT_GREY;
         sysblk.pan_color[ PANC_D_IDX ][ PANC_BG_IDX ] = COLOR_BLUE;
 
+        sysblk.pan_color[ PANC_S_IDX ][ PANC_FG_IDX ] = COLOR_WHITE;
+        sysblk.pan_color[ PANC_S_IDX ][ PANC_BG_IDX ] = COLOR_LIGHT_RED;
+
+        sysblk.pan_color[ PANC_A_IDX ][ PANC_FG_IDX ] = COLOR_WHITE;
+        sysblk.pan_color[ PANC_A_IDX ][ PANC_BG_IDX ] = COLOR_DEFAULT_BG;
+
         break;
 
     case PANC_LIGHT:  // Light scheme: dark text on light background
@@ -1663,6 +1673,12 @@ DLL_EXPORT void set_panel_colors()
         sysblk.pan_color[ PANC_D_IDX ][ PANC_FG_IDX ] = COLOR_LIGHT_GREY;
         sysblk.pan_color[ PANC_D_IDX ][ PANC_BG_IDX ] = COLOR_BLUE;
 
+        sysblk.pan_color[ PANC_S_IDX ][ PANC_FG_IDX ] = COLOR_WHITE;
+        sysblk.pan_color[ PANC_S_IDX ][ PANC_BG_IDX ] = COLOR_LIGHT_RED;
+
+        sysblk.pan_color[ PANC_A_IDX ][ PANC_FG_IDX ] = COLOR_DARK_GREY;
+        sysblk.pan_color[ PANC_A_IDX ][ PANC_BG_IDX ] = COLOR_DEFAULT_BG;
+
         break;
     }
 }
@@ -1676,7 +1692,9 @@ static int msgcolor( int sev, int fgbg )
     case 'I': return sysblk.pan_color[ PANC_I_IDX ][ fgbg ];
     case 'E': return sysblk.pan_color[ PANC_E_IDX ][ fgbg ];
     case 'W': return sysblk.pan_color[ PANC_W_IDX ][ fgbg ];
-    case 'D': return sysblk.pan_color[ PANC_D_IDX ][ fgbg ]; default: break; }
+    case 'D': return sysblk.pan_color[ PANC_D_IDX ][ fgbg ];
+    case 'S': return sysblk.pan_color[ PANC_S_IDX ][ fgbg ];
+    case 'A': return sysblk.pan_color[ PANC_A_IDX ][ fgbg ]; default: break; }
               return sysblk.pan_color[ PANC_X_IDX ][ fgbg ];
 }
 static int fg_msgcolor( int sev ) { return msgcolor( sev, PANC_FG_IDX ); }

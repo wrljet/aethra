@@ -1,12 +1,10 @@
-/* CHANNEL.C    (C) Copyright Roger Bowler,    1999-2012             */
-/*              (C) Copyright Jan Jaeger,      1999-2012             */
-/*              (C) Copyright Mark L. Gaubatz, 2010, 2013            */
-/*              (C) and others 2013-2023                             */
-/*              ESA/390 Channel Emulator                             */
+/* CHANNEL.C    ESA/390 Channel Emulator                             */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   Jan Jaeger                               */
+/*  SPDX-FileContributor:   Mark L. Gaubatz                          */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /* z/Architecture support -                                          */
 /*      (C) Copyright Jan Jaeger, 1999-2012                          */
@@ -2746,7 +2744,7 @@ u_int   waitcount = 0;                  /* Wait counter              */
 
     if (current_priority != sysblk.devprio)
     {
-        set_thread_priority( sysblk.devprio );
+        SET_THREAD_PRIORITY( sysblk.devprio, sysblk.qos_user_initiated );
         current_priority = sysblk.devprio;
     }
 
@@ -2787,7 +2785,7 @@ u_int   waitcount = 0;                  /* Wait counter              */
                     /* have any Hercules locks held                          */
                     if (dev->devprio != current_priority)
                     {
-                        set_thread_priority( dev->devprio);
+                        SET_THREAD_PRIORITY( dev->devprio, sysblk.qos_user_initiated );
                         current_priority = dev->devprio;
                     }
 
@@ -2797,7 +2795,7 @@ u_int   waitcount = 0;                  /* Wait counter              */
                     /* Reset priority back to device default priority */
                     if (current_priority != sysblk.devprio)
                     {
-                        set_thread_priority( sysblk.devprio);
+                        SET_THREAD_PRIORITY( sysblk.devprio, sysblk.qos_user_initiated );
                         current_priority = sysblk.devprio;
                     }
                 }

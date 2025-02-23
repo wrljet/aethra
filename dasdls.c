@@ -1,10 +1,9 @@
-/* DASDLS.C    (C) Copyright Roger Bowler, 1999-2012                 */
-/*             (C) and others 2013-2023                              */
-/*              Hercules DASD Utilities: DASD list program           */
+/* DASDLS.C     Hercules DASD Utilities: DASD list program           */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   Malcolm Beattie                          */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*********************************************************************
  *                          dasdls
@@ -41,9 +40,9 @@ int  chainf3             (int *size, BYTE *ptr, int *count );
 int  ordday_to_calday    (int year, int ordinalday, int *month, int *day);
 
 int  end_of_track        (BYTE *p);
-int  list_contents       (CIFBLK *cif, char *volser, DSXTENT *extent );
-int  do_ls_cif           (CIFBLK *cif);
-int  do_ls               (char *file, char *sfile);
+int  list_contents       (CIFBLK *cif, char *sfile, char *volser, DSXTENT *extent );
+int  do_ls_cif           (CIFBLK *cif, char *sfile);
+int  do_ls               (char *file,  char *sfile);
 
 /*********************************************************************/
 /* globals                                                           */
@@ -60,6 +59,7 @@ static int runflgs   = 0;       /* run flags set from command line   */
 #define rf_header    0x08       /*     show header                   */
 #define rf_info      0x10       /*     show F1 info                  */
 #define rf_cchh      0x20       /*     show extent cchh info         */
+#define rf_nosort    0x40       /*     do NOT sort results           */
 
 /*********************************************************************/
 /* sort by dsname support                                            */
@@ -390,7 +390,7 @@ int chainf3( int *size, BYTE *ptr, int *count )
 /*********************************************************************/
 /* list_contents partly based on dasdutil.c:search_key_equal         */
 
-int list_contents( CIFBLK *cif, char *volser, DSXTENT *extent )
+int list_contents( CIFBLK *cif, char *sfile, char *volser, DSXTENT *extent )
 {
     u_int cext  = 0;
     u_int ccyl  = (extent[cext].xtbcyl[0] << 8) | extent[cext].xtbcyl[1];
@@ -400,7 +400,10 @@ int list_contents( CIFBLK *cif, char *volser, DSXTENT *extent )
 
     EXTGUIMSG( "ETRK=%d\n", (ecyl * cif->heads) + ehead );
 
-    LOGMSG( "\nVOLSER:  %-6s    \"%s\"\n\n", volser, cif->fname );
+    if (sfile)
+        LOGMSG( "\nVOLSER:  %-6s    \"%s\" sf=\"%s\"\n\n", volser, cif->fname, &sfile[3] );
+    else
+        LOGMSG( "\nVOLSER:  %-6s    \"%s\"\n\n", volser, cif->fname );
 
     if (runflgs & rf_header)
     {
@@ -474,8 +477,6 @@ int list_contents( CIFBLK *cif, char *volser, DSXTENT *extent )
                         pdate( f1dscb->ds1credt, runflgs );
 
                         /* REFDT */
-
-    #define ds1refdt    resv2
 
                         if (runflgs & rf_refdate)
                             pdatex( f1dscb->ds1refdt, runflgs );
@@ -631,7 +632,8 @@ int list_contents( CIFBLK *cif, char *volser, DSXTENT *extent )
         int i;
 
         /* Sort them into ascending sequence by dsname */
-        qsort( linestab, numlines, sizeof( linestab ), sort_linestab );
+        if (!(runflgs & rf_nosort))
+            qsort( linestab, numlines, sizeof( linestab ), sort_linestab );
 
         /* NOW actually print them all for real */
         for (i=0; i < numlines; ++i)
@@ -651,7 +653,7 @@ int list_contents( CIFBLK *cif, char *volser, DSXTENT *extent )
 /*********************************************************************/
 /* do_ls_cif based on dasdutil.c:build_extent_array                  */
 
-int do_ls_cif( CIFBLK *cif )
+int do_ls_cif( CIFBLK *cif, char *sfile )
 {
     int rc;
 
@@ -697,7 +699,7 @@ int do_ls_cif( CIFBLK *cif )
         return -1;
     }
 
-    return list_contents( cif, volser, &f4dscb->ds4vtoce );
+    return list_contents( cif, sfile, volser, &f4dscb->ds4vtoce );
 }
 
 /*********************************************************************/
@@ -709,7 +711,7 @@ int do_ls( char *file, char *sfile )
     if (!(cif = open_ckd_image( file, sfile, O_RDONLY | O_BINARY, IMAGE_OPEN_NORMAL )))
         return -1;
 
-    if (do_ls_cif( cif ) != 0)
+    if (do_ls_cif( cif, sfile ) != 0)
     {
         close_ckd_image( cif );
         cif = NULL;
@@ -757,6 +759,11 @@ char           *fn, *sfn;
     {
         fn = *argv;
 
+        if (strcmp( fn, "-nosort" ) == 0)   /* do NOT sort results */
+        {
+            runflgs |= rf_nosort;
+            continue;
+        }
         if (strcmp( fn, "-info" ) == 0)     /* show F1 info */
         {
             runflgs |= rf_info;

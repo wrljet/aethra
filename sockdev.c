@@ -1,9 +1,7 @@
-/* SOCKET.C     (C) Copyright Roger Bowler, 1999-2012                */
-/*              Hercules Socketdevice Handler                        */
+/* SOCKET.C     Hercules Socketdevice Handler                        */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Roger Bowler                   */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 #include "hstdinc.h"
 #include "hercules.h"
@@ -64,7 +62,9 @@ static void term_sockdev( void* arg )
     if (!init_done) init_sockdev();
     SIGNAL_SOCKDEV_THREAD();
     join_thread   ( sysblk.socktid, NULL );
-    detach_thread ( sysblk.socktid );
+#if defined( OPTION_FTHREADS )
+    detach_thread ( sysblk.socktid );  // only needed for fthreads
+#endif
 }
 
 /*-------------------------------------------------------------------*/
@@ -404,7 +404,7 @@ void* socket_thread( void* arg )
 
     UNREFERENCED( arg );
 
-    set_thread_priority( sysblk.srvprio );
+    SET_THREAD_PRIORITY( sysblk.srvprio, sysblk.qos_user_initiated );
 
     /* Display thread started message on control panel */
     LOG_THREAD_BEGIN( SOCKET_THREAD_NAME  );

@@ -1,9 +1,7 @@
-/*  FTHREADS.C  (C) Copyright "Fish" (David B. Trout), 2001-2012     */
-/*              Fish's WIN32 version of pthreads                     */
+/*  FTHREADS.C  Fish's WIN32 version of pthreads                     */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright "Fish" (David B. Trout)        */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 #include "hstdinc.h"
 
@@ -787,7 +785,7 @@ FT_CALL_THREAD_PARMS;
 
 //----------------------------------------------------------------------------------
 
-static DWORD  __stdcall  FTWin32ThreadFunc
+static unsigned __stdcall  FTWin32ThreadFunc
 (
     void*  pMyArgs
 )

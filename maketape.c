@@ -1,6 +1,13 @@
-/* MAKETAPE.C   (c) Copyright Jay Moseley, CCP 2000                        */
-/*              Create AWSTAPE image file                                  */
+/* MAKETAPE.C   Create AWSTAPE image file                                  */
 /*                                                                         */
+/*  SPDX-FileCopyrightText: This program is placed in the public domain    */
+/*  SPDX-FileContributor:   Jay Moseley                                    */
+/*  SPDX-License-Identifier: MIT                                           */
+
+/* Note: While Jay put this file into the public domain, his               */
+/* statement below is closer to the MIT license. I have tagged the         */
+/* file accordingly. -- JRM, 2024-01-03                                    */
+
 /* This program is placed in the public domain and may be freely used      */
 /* and incorporated into derived works so long as attribution to the       */
 /* original authorship remains in any distributed copies of the C source.  */
@@ -44,6 +51,8 @@
 #define RC_HDR_IOERR    4          /* I/O error writing AWS header         */
 #define RC_DATA_IOERR   5          /* I/O error writing data block         */
 #define RC_WTM_IOERR    6          /* I/O error writing tapemark           */
+#define RC_OPEN_INPUT   7          /* Open input file error                */
+#define RC_READ_IOERR   8          /* Error reading input file             */
 
 /*-------------------------------------------------------------------------*/
 /*                        Global variables                                 */
@@ -70,6 +79,7 @@ bool  nltape        = false;       /* whether this is a non-labelled tape  */
 bool  ansi          = false;       /* whether this is an ANSI-label tape   */
 
 int   inFileSeq;                   /* used to index inFileID               */
+int   totfiles;                    /* Total files in inFileID              */
 int   blkSize;                     /* physical block size                  */
 int   blkCount;                    /* block count for EOF1                 */
 
@@ -77,11 +87,12 @@ FILE*  inMeta;                     /* pointer to meta file stream          */
 FILE*  inData;                     /* pointer to input data file stream    */
 FILE*  outf;                       /* output file                          */
 
-char   julianToday[5+1];           /* today's date in julian format        */
-char   volSer[6];                  /* volume serial number (no end NULL!)  */
+char  julianToday[5+1];            /* today's date in julian format        */
+char  volSer[6];                   /* volume serial number (no end NULL!)  */
 
-char   inFileID[ MAXFILES ][ FILENAME_MAX + 1 ]; /* array of MAXFILES files
+char  inFileID[ MAXFILES ][ FILENAME_MAX + 5 ];  /* array of MAXFILES files
                                                     to read/include        */
+bool  inBINopt[ MAXFILES ];        /* array of "BIN" flags for each file   */
 
 char  buf[ MAXAWSBUFF ];           /* output AWSTAPE buffer                */
 
@@ -430,7 +441,10 @@ bool errors;                       /* indicate missing/invalid arguments   */
 
     /* initialize input file path table to null values */
     for (inFileSeq = 0; inFileSeq < MAXFILES; inFileSeq++)
+    {
         STRLCPY( inFileID[ inFileSeq ], "" );
+        inBINopt[ inFileSeq ] = binary;
+    }
 
     /* if single input file specified */
     if (strncasecmp( pInFileID, "@", 1 ) != 0)
@@ -445,7 +459,9 @@ bool errors;                       /* indicate missing/invalid arguments   */
         {
             fclose( inData );
             inData = NULL;
+            totfiles = 1;
             STRLCPY( inFileID[0], pInFileID );
+            inBINopt[0] = binary;
         }
     }
     else /* specified file is a @meta file */
@@ -459,6 +475,9 @@ bool errors;                       /* indicate missing/invalid arguments   */
         else
         {
             int k;
+            bool binflag;
+            const char* pFilename;
+
             i = 0;
             inFileSeq = 0;
 
@@ -468,7 +487,7 @@ bool errors;                       /* indicate missing/invalid arguments   */
                 i++;
 
                 /* exit while when EOF reached on META file */
-                if (!fgets( buf, FILENAME_MAX, inMeta ))
+                if (!fgets( buf, FILENAME_MAX + 5, inMeta ))
                     break;
 
                 /* replace newline character if present */
@@ -476,10 +495,23 @@ bool errors;                       /* indicate missing/invalid arguments   */
                 if (k >= 1 && buf[k-1] == '\n')
                     buf[k-1] = 0;
 
-                if (!(inData = fopen( buf, "r" )))
+                /* Check for optional BIN flag */
+                if (str_caseless_eq_n( buf, "BIN ", 4 ))
+                {
+                    pFilename = &buf[4];
+                    binflag = true;
+                }
+                else
+                {
+                    pFilename = &buf[0];
+                    binflag = binary;   // (default)
+                }
+
+
+                if (!(inData = fopen( pFilename, "r" )))
                 {
                     // "Error opening %s file %i '%s': %s"
-                    FWRMSG( stderr, HHC02773, "E", "included input", i, buf, strerror( errno ));
+                    FWRMSG( stderr, HHC02773, "E", "included input", i, pFilename, strerror( errno ));
                     errors = true;
                 }
                 else
@@ -495,7 +527,8 @@ bool errors;                       /* indicate missing/invalid arguments   */
                     }
                     else
                     {
-                        STRLCPY( inFileID[ inFileSeq ], buf );
+                        STRLCPY( inFileID[ inFileSeq ], pFilename );
+                        inBINopt[ inFileSeq ] = binflag;
                         inFileSeq++;
                     }
                 }
@@ -503,6 +536,7 @@ bool errors;                       /* indicate missing/invalid arguments   */
 
             fclose( inMeta );
             inMeta = NULL;
+            totfiles = inFileSeq;
 
         } /* else (meta file open succeeded) */
     } /* else (is a meta file) */
@@ -821,6 +855,7 @@ int main( int argc, char* argv[] )
 char   *pgm;                       /* less any extension (.ext)            */
 int     i;                         /* used to index string vars            */
 int     offset;                    /* used for building blocked records    */
+int     lastrec = 0;               /* Size of last record if binary        */
 
     INITIALIZE_UTILITY( UTILITY_NAME, UTILITY_DESC, &pgm );
 
@@ -863,10 +898,14 @@ int     offset;                    /* used for building blocked records    */
             buf[79] = '1';
 
         save = binary;
-        binary = ansi;
-        writeBuffer( 80 );
+        {
+            binary = ansi;
+            writeBuffer( 80 );
+        }
         binary = save;
     }
+
+    EXTGUIMSG( "FILES=%d\n", totfiles );
 
     inFileSeq = 0;                   /* index of input files        */
     blkSize = lrecl * blkfactor;     /* compute physical block size */
@@ -883,13 +922,18 @@ int     offset;                    /* used for building blocked records    */
     /* loop for processing all specified input files */
     while (1)
     {
+        EXTGUIMSG( "FILE=%d\n", inFileSeq+1 );
+
         // "Processing input from: '%s'"
         WRMSG( HHC02777, "I", inFileID[ inFileSeq ]);
+        binary = inBINopt[ inFileSeq ];
+        mode = binary ? "rb" : "r";
 
         if (!(inData = fopen( inFileID[ inFileSeq ], mode )))
         {
             // "Error opening %s file %i '%s': %s"
             FWRMSG( stderr, HHC02773, "E", "input", inFileSeq, inFileID[ inFileSeq ], strerror( errno ));
+            ErrExit( RC_OPEN_INPUT );
         }
 
         /* if multiple output files specified, write header labels */
@@ -907,18 +951,34 @@ int     offset;                    /* used for building blocked records    */
             {
                 i = fread( &buf[ offset ], 1, lrecl, inData );
 
-                if (!i)
-                    break;
+                if (i < 1)      /* (error or EOF) */
+                {
+                    if (ferror( inData ))
+                    {
+                        // "Error reading from input file' %s': %s"
+                        FWRMSG( stderr, HHC02784, "E", inFileID[ inFileSeq ], strerror( errno ));
+                        ErrExit( RC_READ_IOERR );
+                    }
+                    break; /* (normal EOF) */
+                }
 
-                /* auto-pad to LRECL */
+                /* Last/final input record? */
                 if (i < lrecl)
-                    memset( &buf[ offset + i ], 0, lrecl - i );
+                    lastrec = i;
             }
             else
             {
                 /* exit inner loop when EOF reached on data file */
                 if (!fgets( &buf[ offset ], MAXLRECL, inData ))
-                    break;
+                {
+                    if (ferror( inData ))
+                    {
+                        // "Error reading from input file' %s': %s"
+                        FWRMSG( stderr, HHC02784, "E", inFileID[ inFileSeq ], strerror( errno ));
+                        ErrExit( RC_READ_IOERR );
+                    }
+                    break; /* (normal EOF) */
+                }
 
                 /* copy i/p to o/p buffer until newline or LRECL reached */
                 for (i=0; i < lrecl && buf[offset+i] != '\n'; i++);
@@ -929,14 +989,17 @@ int     offset;                    /* used for building blocked records    */
             }
 
             /* update block pointer and check for end of block */
-            offset += lrecl;
+            offset += lastrec ? lastrec : lrecl;
 
-            if (offset >= blkSize)
+            if (lastrec || offset >= blkSize)
             {
                 writeBuffer( offset );
                 blkCount++;
                 offset = 0;
             }
+
+            lastrec = 0;
+
         } /* while (processing current input data file) */
 
         fclose( inData );              /* close input data file */

@@ -1,11 +1,9 @@
-/* HTHREADS.H   (C) Copyright Roger Bowler, 1999-2013                */
-/*              (C) Copyright "Fish" (David B. Trout), 2013          */
-/*              (C) and others 2014-2021                             */
-/*              Hercules locking and threading                       */
+/* HTHREADS.H   Hercules locking and threading                       */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   "Fish" (David B. Trout)                  */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 #ifndef _HTHREADS_H
 #define _HTHREADS_H
@@ -205,6 +203,35 @@ typedef pthread_rwlock_t        HRWLOCK;
 #define hthread_get_priority_min( po )          sched_get_priority_min( po )
 #define hthread_get_priority_max( po )          sched_get_priority_max( po )
 #endif /* !defined( OPTION_FTHREADS ) */
+
+/*-------------------------------------------------------------------*/
+/*  QOS support                                                      */
+/*  macOS uses a different method of setting thread priorities than  */
+/*  other POSIX systems with pthreads. It defines a set of classes   */
+/*  of service, and uses that information to decide whether to       */
+/*  schedule each thread on an efficiency (slow but power-sipping)   */
+/*  CPU core or a performance (fast but power-hungry) core. The idea */
+/*  is that background tasks go on an efficiency core, while         */
+/*  tasks the user interacts with go on the performance cores. This  */
+/*  carries some serious benefits for battery life in the normal     */
+/*  case, but it means that Hercules runs much more slowly than the  */
+/*  user expects. We define the Hercules console and HTTP server as  */
+/*  being used for user interaction, and the remainder as being used */
+/*  for user-initiated tasks, which will tell macOS that they can    */
+/*  be scheduled on performance cores whenever available. This makes */
+/*  a dramatic difference in Hercules performance, at the cost of    */
+/*  shorter battery life in a laptop environment.                    */
+/*  We only do this when building for Apple Silicon, as no macOS     */
+/*  system on Intel has efficiency cores.                            */
+/*-------------------------------------------------------------------*/
+
+#if defined( BUILD_APPLE_M1 )
+  #define SET_THREAD_PRIORITY( PRI, QOS ) \
+    { rc = pthread_set_qos_class_self_np( ( QOS ), ( PRI ) - sysblk.minprio ) ; }
+#else
+  #define SET_THREAD_PRIORITY( PRI, QOS ) \
+    { rc = set_thread_priority( ( PRI ) ) ; }
+#endif
 
 /*-------------------------------------------------------------------*/
 /*       Hercules threading macros, consts and typedefs              */

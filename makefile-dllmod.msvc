@@ -1,8 +1,10 @@
 # ***************************************************************************
-# MAKEFILE-DLLMOD.MSVC (C) Copyright Roger Bowler, 2005-2010
+# MAKEFILE-DLLMOD.MSVC
 #
 # Build Hercules for Win32 using MSVC and nmake (DLL version with loadable modules)
 #
+#  SPDX-FileCopyrightText: Copyright Roger Bowler
+#  SPDX-License-Identifier: QPL-1.0
 # ***************************************************************************
 
 INCDIR = msvc.makefile.includes
@@ -35,6 +37,16 @@ cflags      =  -c -DCRTAPI1=_cdecl -DCRTAPI2=_cdecl -nologo -GS -DWIN32 -D_WIN32
 cvarsdll    =  -D_MT -D_DLL
 dlllflags   =  /INCREMENTAL:NO /NOLOGO -dll
 rcvars      =  -DWIN32 -D_WIN32 -DWINVER=$(NMAKE_WINVER)
+
+# We use CLANG if the CL envrionment variable is set, e.g. with a  SET "CL=-mcx16 /w"
+# The -DHAVE_SOCKLEN_T avoids a type redefinition from "ws2tcpip.h"
+
+!IFDEF CL
+
+cc      =  clang-cl
+cflags  =  $(cflags) -DHAVE_SOCKLEN_T
+
+!ENDIF
 
 # Now set values unique to architecture and/or build...
 

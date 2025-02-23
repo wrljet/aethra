@@ -1,9 +1,7 @@
-/* CONSOLE.C   (C) Copyright Roger Bowler and others, 1999-2016      */
-/*              Hercules Console Device Handler                      */
+/* CONSOLE.C    Hercules Console Device Handler                      */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Roger Bowler                   */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* This module contains device handling functions for console        */
@@ -3405,7 +3403,7 @@ int prev_rlen3270;
     UNREFERENCED( arg );
 
     /* Set server thread priority; ignore any errors */
-    set_thread_priority( sysblk.srvprio );
+    SET_THREAD_PRIORITY( sysblk.srvprio, sysblk.qos_user_interactive );
 
     // "Thread id "TIDPAT", prio %2d, name %s started"
     LOG_THREAD_BEGIN( CON_CONN_THREAD_NAME  );

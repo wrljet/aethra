@@ -1,13 +1,11 @@
-/* HSCCMD.C     (C) Copyright Roger Bowler, 1999-2012                */
-/*              (C) Copyright Jan Jaeger, 1999-2012                  */
-/*              (C) Copyright "Fish" (David B. Trout), 2002-2009     */
-/*              (C) Copyright TurboHercules SAS, 2011                */
-/*              (C) and others 2013-2023                             */
-/*              Execute Hercules System Commands                     */
+/* HSCCMD.C     Execute Hercules System Commands                     */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   Jan Jaeger                               */
+/*  SPDX-FileContributor:   TurboHercules, SAS                       */
+/*  SPDX-FileContributor:   "Fish" (David B. Trout)                  */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* This module implements the various Hercules System Console        */
@@ -3289,6 +3287,9 @@ int engines_cmd( int argc, char* argv[], char* cmdline )
         char*  styp;                    /* -> Engine type string     */
         char*  strtok_str = NULL;       /* strtok_r work variable    */
         char*  arg1 = strdup( argv[1] );/* (save before modifying)   */
+
+        /* Default all engines to type "CP" */
+        memset( ptyp, short2ptyp( "CP" ), sizeof( ptyp ));
 
         /* Parse processor engine types operand, and save the results
            for eventual sysblk update if no errors are detected.
@@ -7040,7 +7041,6 @@ U16      devnum;                        /* Device number             */
 U16      lcss;                          /* Logical CSS               */
 int      flag = 1;                      /* sf- flag (default merge)  */
 int      level = 2;                     /* sfk level (default 2)     */
-TID      tid;                           /* sf command thread id      */
 char     c;                             /* work for sscan            */
 int      rc;
 
@@ -7180,14 +7180,50 @@ int      rc;
             cckdblk.sflevel = level;
     }
 
+    /* Reject the command if the guest has been IPLed */
+    if (action != 'd')
+    {
+        /* Unless test mode mode is active! Test scripts MUST be
+           allowed to e.g. discard shadow files after their tests
+           have completed to prevent them from failing the next
+           time the test is run due to the state of the test dasd
+           having been changed by the previous run! But if we're
+           NOT running in test mode (i.e. if this is normal user
+           execution), then don't allow them since doing to could
+           cause damage to their guest's running state.
+        */
+        if (!sysblk.scrtest)    // (normal user non-test mode?)
+        {
+            if (sysblk.ipled)
+            {
+                // "Command cannot be issued once system has been IPLed"
+                // "Hercules needs to be restarted before proceeding"
+                WRMSG( HHC00829, "E" );
+                WRMSG( HHC00831, "W" );
+                return -1;
+            }
+
+            sysblk.sfcmd = TRUE;
+        }
+    }
+
     /* Process the command */
     switch (action)
     {
+#if defined( OPTION_NOASYNC_SF_CMDS )
+        case '+': cckd_sf_add   ( dev ); break;
+        case '-': cckd_sf_remove( dev ); break;
+        case 'c': cckd_sf_comp  ( dev ); break;
+        case 'd': cckd_sf_stats ( dev ); break;
+        case 'k': cckd_sf_chk   ( dev ); break;
+#else
+        TID tid;
         case '+': if (create_thread( &tid, DETACHED, cckd_sf_add,    dev, "sf+ command" )) cckd_sf_add   ( dev ); break;
         case '-': if (create_thread( &tid, DETACHED, cckd_sf_remove, dev, "sf- command" )) cckd_sf_remove( dev ); break;
         case 'c': if (create_thread( &tid, DETACHED, cckd_sf_comp,   dev, "sfc command" )) cckd_sf_comp  ( dev ); break;
         case 'd': if (create_thread( &tid, DETACHED, cckd_sf_stats,  dev, "sfd command" )) cckd_sf_stats ( dev ); break;
         case 'k': if (create_thread( &tid, DETACHED, cckd_sf_chk,    dev, "sfk command" )) cckd_sf_chk   ( dev ); break;
+#endif
     }
 
     return 0;

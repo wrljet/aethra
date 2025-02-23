@@ -1,23 +1,14 @@
-/* COMMADPT.C   (C) Copyright Roger Bowler & Others, 2002-2012       */
-/*              (C) Copyright, MHP, 2007-2008 (see below)            */
-/*              Hercules Communication Line Driver                   */
+/* COMMADPT.C   Hercules Communication Line Driver                   */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
-
-/*-------------------------------------------------------------------*/
-/* Hercules Communication Line Driver                                */
-/* (c) 1999-2010 Roger Bowler & Others                               */
-/* Use of this program is governed by the QPL License                */
-/* Original Author : Ivan Warren                                     */
-/* Prime Maintainer : Ivan Warren                                    */
-/*-------------------------------------------------------------------*/
-
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   Ivan Warren                              */
+/*  SPDX-FileContributor:   Max H. Parke                             */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /* ********************************************************************
 
-   TTY Mode Additions (C) Copyright, 2007 MHP <ikj1234i at yahoo dot com>
+   TTY Mode Additions Copyright MHP <ikj1234i at yahoo dot com>
 
    Feb. 2007- Add support for 2703 Telegraph Terminal Control Type II
    (for use with TTY ASR 33/35 or compatible terminals).
@@ -1307,7 +1298,7 @@ static void *commadpt_thread(void *vca)
     init_signaled=0;
 
     /* Set server thread priority; ignore any errors */
-    set_thread_priority( sysblk.srvprio);
+    SET_THREAD_PRIORITY( sysblk.srvprio, sysblk.qos_user_initiated );
 
     MSGBUF(threadname, "%1d:%04X communication thread", SSID_TO_LCSS(ca->dev->ssid), devnum);
     LOG_THREAD_BEGIN( threadname );

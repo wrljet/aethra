@@ -1,13 +1,9 @@
-/* SCSITAPE.C   (C) Copyright "Fish" (David B. Trout), 2005-2012     */
-/*              Hercules SCSI tape handling module                   */
+/* SCSITAPE.C   Hercules SCSI tape handling module                   */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
-
-/* Original Author: "Fish" (David B. Trout)                          */
-/* Prime Maintainer: "Fish" (David B. Trout)                         */
-/* Secondary Maintainer: Ivan Warren                                 */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   "Fish" (David B. Trout)                  */
+/*  SPDX-FileContributor:   Ivan Warren                              */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* This module only contains support for SCSI tapes. Please see the  */
@@ -1701,6 +1697,7 @@ static void* get_stape_status_thread( void* notused )
     DEVBLK*       dev = NULL;
     struct mtget  mtget;
     int           timeout;
+    int           rc;
 
     UNREFERENCED( notused );
 
@@ -1721,7 +1718,8 @@ static void* get_stape_status_thread( void* notused )
     // in order to prevent their wait from timing out. We ensure this
     // by setting our own priority HIGHER than theirs.
 
-    set_thread_priority( sysblk.devprio + 1 );
+    SET_THREAD_PRIORITY( sysblk.devprio + 1, sysblk.qos_user_interactive );
+    UNREFERENCED(rc);
 
     // "Thread id "TIDPAT", prio %2d, name %s started"
     LOG_THREAD_BEGIN( SCSISTAT_THREAD_NAME  );

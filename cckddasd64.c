@@ -1,12 +1,9 @@
-/* CCKDDASD64.C (C) Copyright Roger Bowler, 1999-2012                */
-/*              (C) Copyright Greg Smith, 2002-2012                  */
-/*              (C) and others 2013-2022                             */
+/* CCKDDASD64.C CCKD (Compressed CKD) Device Handler                 */
 /*                                                                   */
-/*              CCKD (Compressed CKD) Device Handler                 */
-/*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   Greg Smith                               */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* This module contains device functions for compressed emulated     */
@@ -227,13 +224,16 @@ int             rc, i;                  /* Return code, Loop index   */
     }
     release_lock( &cckd->filelock );
 
+    /* If no more devices then perform global termination */
+    cckd_dasd_term_if_appropriate();
+
     /* Destroy the cckd extension's locks and conditions */
     destroy_lock( &cckd->cckdiolock );
     destroy_lock( &cckd->filelock );
     destroy_condition( &cckd->cckdiocond );
 
     /* free the cckd extension itself */
-    dev->cckd_ext= cckd_free (dev, "ext", cckd);
+    dev->cckd_ext = cckd_free (dev, "ext", cckd);
 
     if (dev->dasdsfn) free (dev->dasdsfn);
     dev->dasdsfn = NULL;
@@ -241,12 +241,10 @@ int             rc, i;                  /* Return code, Loop index   */
     close (dev->fd);
     dev->fd = -1;
 
-    /* If no more devices then perform global termination */
-    cckd_dasd_term_if_appropriate();
-
     dev->buf = NULL;
     dev->bufsize = 0;
 
+    /* return to caller */
     return 0;
 } /* end function cckd64_dasd_close_device */
 
@@ -3471,18 +3469,23 @@ BYTE            buf[64*1024];           /* Buffer                    */
         {
             if ((cckd = dev->cckd_ext)) /* Compressed device? */
             {
-                // "%1d:%04X CCKD file: merging shadow files..."
-                WRMSG( HHC00321, "I", LCSS_DEVNUM );
-                cckd->sfmerge = merge;
-                cckd->sfforce = force;
-                cckd64_sf_remove( dev );
-                n++;
+                if (cckd->sfn) /* Any active shadow file(s)? */
+                {
+                    // "%1d:%04X CCKD file: merging shadow files..."
+                    WRMSG( HHC00321, "I", LCSS_DEVNUM );
+                    cckd->sfmerge = merge;
+                    cckd->sfforce = force;
+                    cckd64_sf_remove( dev );
+                    n++;
+                }
             }
         }
         // "CCKD file number of devices processed: %d"
         WRMSG( HHC00316, "I", n );
         return NULL;
     }
+
+    /* Specific device... */
 
     if (!dev->cckd64)
         return cckd_sf_remove( data );
@@ -3491,6 +3494,13 @@ BYTE            buf[64*1024];           /* Buffer                    */
     {
         // "%1d:%04X CCKD file: device is not a cckd device"
         WRMSG( HHC00317, "W", LCSS_DEVNUM );
+        return NULL;
+    }
+
+    if (!cckd->sfn)
+    {
+        // "%1d:%04X CCKD file: device has no shadow files"
+        WRMSG( HHC00390, "W", LCSS_DEVNUM );
         return NULL;
     }
 
@@ -3543,7 +3553,7 @@ BYTE            buf[64*1024];           /* Buffer                    */
     fix = cckd->cdevhdr[ to_sfx ].cdh_nullfmt;
 
     /* Harden the `from' file */
-    if (cckd_harden( dev ) < 0)
+    if (cckd64_harden( dev ) < 0)
     {
         // "%1d:%04X CCKD file[%d] %s: shadow file not merged: file[%d] %s%s"
         WRMSG( HHC00324, "E", LCSS_DEVNUM, from_sfx, cckd_sf_name( dev, cckd->sfx ),

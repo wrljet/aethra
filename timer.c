@@ -1,10 +1,7 @@
-/* TIMER.C      (C) Copyright Roger Bowler, 1999-2012                */
-/*              (C) and others 2013-2021                             */
-/*              Timer support functions                              */
+/* TIMER.C      Timer support functions                              */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Roger Bowler                   */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /* z/Architecture support - (C) Copyright Jan Jaeger, 1999-2012      */
 
@@ -167,6 +164,7 @@ CPU_BITMAP      intmask = 0;            /* Interrupt CPU mask        */
 void* timer_thread ( void* argp )
 {
 int     i;                              /* Loop index                */
+int     rc;                             /* return code               */
 REGS   *regs;                           /* -> REGS                   */
 U64     mipsrate;                       /* Calculated MIPS rate      */
 U64     siosrate;                       /* Calculated SIO rate       */
@@ -190,7 +188,8 @@ bool    txf_PPA;                        /* true == PPA assist needed */
     UNREFERENCED( argp );
 
     /* Set timer thread priority */
-    set_thread_priority( sysblk.todprio );
+    SET_THREAD_PRIORITY( sysblk.todprio, sysblk.qos_user_initiated );
+    UNREFERENCED(rc);
 
     // "Thread id "TIDPAT", prio %2d, name %s started"
     LOG_THREAD_BEGIN( TIMER_THREAD_NAME  );
@@ -359,6 +358,7 @@ void* rubato_thread( void* argp )
     int    new_timerint_usecs;          /* Adjusted interval usecs   */
     int    intervals_per_second;        /* Intervals in one second   */
     int    i;                           /* Loop index                */
+    int    rc;                          /* return code               */
     U32    count[5] = {0,0,0,0,0};      /* Transactions executed     */
                                         /* during past 5 intervals   */
     U32    max_tps_rate = 0;            /* Transactions per second   */
@@ -366,7 +366,8 @@ void* rubato_thread( void* argp )
     UNREFERENCED( argp );
 
     /* Set our thread priority to be the same as that of CPU threads */
-    set_thread_priority( sysblk.cpuprio );
+    SET_THREAD_PRIORITY( sysblk.cpuprio, sysblk.qos_user_initiated );
+    UNREFERENCED(rc);
 
     // "Thread id "TIDPAT", prio %2d, name %s started"
     LOG_THREAD_BEGIN( RUBATO_THREAD_NAME );

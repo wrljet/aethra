@@ -1,9 +1,7 @@
-/* CCKD.H      (C) Copyright "Fish" (David B. Trout), 2018-2022      */
-/*              CCKD dasd struct and type definitions                */
+/* CCKD.H       CCKD dasd struct and type definitions                */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright "Fish" (David B. Trout)        */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 #ifndef _CCKD_H_
 #define _CCKD_H_
@@ -268,7 +266,8 @@ struct CCKDBLK {                        /* Global cckd dasd block    */
                          debug:1,       /* 1=CCW trace debug msgs    */
                          dtax:1,        /* 1=Dump Table At Exit      */
                          sfmerge:1,     /* 1=sf-* merge              */
-                         sfforce:1;     /* 1=sf-* force              */
+                         sfforce:1,     /* 1=sf-* force              */
+                         termwr:1;      /* 1=terminate wr threads    */
         int              sflevel;       /* sfk xxxx level            */
         int              batchml;       /* message level for batch ops  */
 

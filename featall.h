@@ -1,10 +1,7 @@
-/* FEATALL.H    (C) Copyright Jan Jaeger, 2000-2012                  */
-/*              (C) and others 2013-2023                             */
-/*              Architecture-dependent macro definitions             */
+/* FEATALL.H    Architecture-dependent macro definitions             */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Jan Jaeger                     */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /*               Default OPTIONs and FEATUREs                        */
@@ -48,10 +45,8 @@
 #define OPTION_MVS_TELNET_WORKAROUND    // Handle non-std MVS telnet
 #define OPTION_SIE_PURGE_DAT_ALWAYS     // Ivan 2016-07-30: purge DAT
                                         // ALWAYS at start SIE mode
-//#define NO_OPTINST                      // Doesn't really help much?
-#define OPTION_NO_E3_OPTINST            // Problematic!
-//#define OPTION_E7_PREFIX                // Prefix E7 CCW support
-//#define OPTION_E7_TRACE_64              // E7 CCW trace 64 bytes
+#define OPTION_NOASYNC_SF_CMDS          // Bypass bug in cache logic
+                                        // (see GitHub Issue #618!)
 
 /*-------------------------------------------------------------------*/
 /*              Normal default OPTIONs and FEATUREs                  */
@@ -91,6 +86,7 @@
 #if !defined( OPTION_OPTINST ) && !defined( NO_OPTINST )
 #define OPTION_OPTINST                  /* Optimized instructions    */
 #endif
+#define OPTION_NO_E3_OPTINST            /* Problematic!              */
 
 #if defined( HAVE_FULL_KEEPALIVE )
   #if !defined( HAVE_PARTIAL_KEEPALIVE ) || !defined( HAVE_BASIC_KEEPALIVE )

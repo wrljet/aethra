@@ -1,13 +1,12 @@
-/* CTC_CTCI.C   (C) Copyright Roger Bowler, 2000-2012                */
-/*              (C) Copyright James A. Pierson, 2002-2009            */
-/*              (C) Copyright "Fish" (David B. Trout), 2002-2009     */
-/*              (C) Copyright Fritz Elfert, 2001-2009                */
-/*              Hercules IP Channel-to-Channel Support (CTCI)        */
+/* CTC_CTCI.C   Hercules IP Channel-to-Channel Support (CTCI)        */
 /*                                                                   */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Roger Bowler                             */
+/*  SPDX-FileContributor:   James A. Pierson                         */
+/*  SPDX-FileContributor:   "Fish" (David B. Trout)                  */
+/*  SPDX-FileContributor:   Fritz Elfert                             */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*********************************************************************/
 /* Please keep to this terminology:                                  */
@@ -607,10 +606,10 @@ int  CTCI_Close( DEVBLK* pDEVBLK )
 
         TID tid = pCTCBLK->tid;
         pCTCBLK->fCloseInProgress = 1;  // (ask read thread to exit)
-#if defined(_MSVC_)
         join_thread( tid, NULL );       // (wait for thread to end)
+#if defined( OPTION_FTHREADS )
+        detach_thread( tid );           // only needed for Fish threads
 #endif
-        detach_thread( tid );           // (wait for thread to end)
     }
 
     pDEVBLK->fd = -1;           // indicate we're now closed

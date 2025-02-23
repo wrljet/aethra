@@ -1,10 +1,7 @@
-/* cckdmap.c    (C) Copyright "Fish" (David B. Trout), 2019-2022     */
-/*              (C) and others 2022-2023                             */
-/*               Compressed dasd file map                            */
+/* cckdmap.c     Compressed dasd file map                            */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright "Fish" (David B. Trout)        */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /*   This program is a CCKD64 debugging tool that reads a dasd       */
@@ -487,7 +484,7 @@ U16             devtype;                /* Device type (e.g. 0x3390) */
     SWAP_CCKD64_DEVHDR( &cdevhdr );
 
     /* Save some values for reporting */
-    devtype = 0x3300 + devhdr.dh_devtyp;
+    devtype = devhdr.dh_devtyp;
 
     FETCH_LE_FW( heads,   devhdr.dh_heads   );
     FETCH_LE_FW( trksize, devhdr.dh_trksize );
@@ -504,7 +501,7 @@ U16             devtype;                /* Device type (e.g. 0x3390) */
     {
         if (!(fbatab = dasd_lookup( DASD_FBADEV, NULL, devtype, cyls )))
         {
-            // "Device type %4.4X not found in dasd table"
+            // "Device type '%2.2X' not found in dasd table"
             FWRMSG( stderr, HHC03005, "E", devtype );
             return -1;
         }
@@ -513,7 +510,7 @@ U16             devtype;                /* Device type (e.g. 0x3390) */
     {
         if (!(ckdtab = dasd_lookup( DASD_CKDDEV, NULL, devtype, cyls )))
         {
-            // "Device type %4.4X not found in dasd table"
+            // "Device type '%2.2X' not found in dasd table"
             FWRMSG( stderr, HHC03005, "E", devtype );
             return -1;
         }

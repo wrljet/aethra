@@ -1,20 +1,14 @@
-/*  HSCUTL.C    (C) Copyright Ivan Warren & Others, 2003-2012        */
-/*              (C) Copyright TurboHercules, SAS 2010-2011           */
-/*              (C) and others 2011-2023                             */
-/*              Hercules Platform Port & Misc Functions              */
+/*  HSCUTL.C    Hercules Platform Port & Misc Functions              */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Ivan Warrenr                             */
+/*  SPDX-FileContributor:   TurboHercules, SAS                       */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* HSCUTL.C   --   Implementation of functions used in hercules that */
 /* may be missing on some platform ports, or other convenient mis-   */
 /* laneous global utility functions.                                 */
-/*-------------------------------------------------------------------*/
-/* (c) 2003-2006 Ivan Warren & Others -- Released under the Q Public */
-/* License -- This file is portion of the HERCULES S/370, S/390 and  */
-/* z/Architecture emulator                                           */
 /*-------------------------------------------------------------------*/
 
 #include "hstdinc.h"
@@ -841,11 +835,15 @@ int set_socket_keepalive( int sfd,
     struct protoent * tcpproto;
 
     /* Retrieve TCP protocol value (mostly for FreeBSD portability) */
-    tcpproto = getprotobyname("TCP");
+    tcpproto = getprotobyname("tcp");
     if (!tcpproto)
     {
-        WRMSG( HHC02219, "E", "getprotobyname(\"TCP\")", strerror( HSO_errno ));
-        return -1;
+        tcpproto = getprotobyname("TCP");
+        if (!tcpproto)
+        {
+            WRMSG( HHC02219, "E", "getprotobyname(\"tcp\")", strerror( HSO_errno ));
+            return -1;
+        }
     }
     l_tcp = tcpproto->p_proto;
 
@@ -949,11 +947,15 @@ int get_socket_keepalive( int sfd, int* idle_time, int* probe_interval,
     socklen_t  optlen = sizeof( optval );
 
     /* Retrieve TCP protocol value (mostly for FreeBSD portability) */
-    tcpproto = getprotobyname("TCP");
+    tcpproto = getprotobyname("tcp");
     if (!tcpproto)
     {
-        WRMSG( HHC02219, "E", "getprotobyname(\"TCP\")", strerror( HSO_errno ));
-        return -1;
+        tcpproto = getprotobyname("TCP");
+        if (!tcpproto)
+        {
+            WRMSG( HHC02219, "E", "getprotobyname(\"tcp\")", strerror( HSO_errno ));
+            return -1;
+        }
     }
     l_tcp = tcpproto->p_proto;
 #else

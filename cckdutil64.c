@@ -1,10 +1,7 @@
-/* CCKDUTIL64.C (C) Copyright Roger Bowler, 1999-2012                */
-/*              (C) and others 2013-2022                             */
-/*              CCKD64 (Compressed CKD64) Common routines            */
+/* CCKDUTIL64.C CCKD64 (Compressed CKD64) Common routines            */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Roger Bowler                   */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* This module contains functions for compressed CKD devices         */
@@ -1223,6 +1220,7 @@ BYTE            buf[4*65536];           /* buffer                    */
     if (!ro && level < 2 && (cdevhdr.cdh_opts & CCKD_OPT_SPERRS))
     {
         level = 2;
+        // "%1d:%04X CCKD file %s: forcing check level %d"
         if(dev->batch)
             FWRMSG( stdout, HHC00364, "W", LCSS_DEVNUM, dev->filename, level );
         else
@@ -1253,6 +1251,7 @@ BYTE            buf[4*65536];           /* buffer                    */
         if (level < 1)
         {
             level = 1;
+            // "%1d:%04X CCKD file %s: forcing check level %d"
             if(dev->batch)
                 FWRMSG( stdout, HHC00364, "W", LCSS_DEVNUM, dev->filename, level );
             else
@@ -1264,6 +1263,7 @@ BYTE            buf[4*65536];           /* buffer                    */
     if (level < 1 && (cdevhdr.cdh_opts & CCKD_OPT_OPENED))
     {
         level = 1;
+        // "%1d:%04X CCKD file %s: forcing check level %d"
         if(dev->batch)
             FWRMSG( stdout, HHC00364, "W", LCSS_DEVNUM, dev->filename, level );
         else
@@ -1754,6 +1754,7 @@ cdsk_space_check:
                 if (level < 3)
                 {
                     level = 3;
+                    // "%1d:%04X CCKD file %s: forcing check level %d"
                     if(dev->batch)
                         FWRMSG( stdout, HHC00364, "W", LCSS_DEVNUM,
                                 dev->filename, level );

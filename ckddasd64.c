@@ -1,9 +1,7 @@
-/* CKDDASD64.C  (C) Copyright Roger Bowler, 1999-2012                */
-/*              ESA/390 CKD Direct Access Storage Device Handler     */
+/* CKDDASD64.C  ESA/390 CKD Direct Access Storage Device Handler     */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Roger Bowler                   */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* This module contains device handling functions for emulated       */
@@ -162,6 +160,13 @@ BYTE            serial[12+1] = {0};     /* Dasd serial number        */
             strcasecmp ("fakewrt",   argv[i]) == 0 ||
             strcasecmp ("fw",        argv[i]) == 0)
         {
+            if (!dev->ckdrdonly)
+            {
+                // "%1d:%04X CKD file: 'fakewrite' invalid without 'readonly'"
+                WRMSG( HHC00443, "E", LCSS_DEVNUM );
+                return -1;
+            }
+
             dev->ckdfakewr = 1;
             continue;
         }
@@ -207,7 +212,8 @@ BYTE            serial[12+1] = {0};     /* Dasd serial number        */
         dev->fd = HOPEN (dev->filename, dev->ckdrdonly ?
                         O_RDONLY|O_BINARY : O_RDWR|O_BINARY);
         if (dev->fd < 0)
-        {   /* Try read-only if shadow file present */
+        {
+            /* Try read-only if shadow file present */
             if (!dev->ckdrdonly && dev->dasdsfn != NULL)
                 dev->fd = HOPEN (dev->filename, O_RDONLY|O_BINARY);
             if (dev->fd < 0)

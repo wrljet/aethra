@@ -1,10 +1,7 @@
-/* CTC_PTP.C    (C) Copyright Ian Shorter, 2011-2012                  */
-/*              (C) and others 2013-2021                             */
-/*              MPC Point-To-Point (PTP)                              */
+/* CTC_PTP.C    MPC Point-To-Point (PTP)                              */
 /*                                                                    */
-/*   Released under "The Q Public License Version 1"                  */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to   */
-/*   Hercules.                                                        */
+/*  SPDX-FileCopyrightText: Copyright Ian Shorter                     */
+/*  SPDX-License-Identifier: QPL-1.0                                  */
 
 /* This module contains device handling functions for the             */
 /* MPCPTP and/or MPCPTP6 emulated connection                          */
@@ -859,10 +856,10 @@ int  ptp_close( DEVBLK* pDEVBLK )
 
         TID tid = pPTPBLK->tid;
         pPTPBLK->fCloseInProgress = 1;  // (ask read thread to exit)
-#if defined(_MSVC_)
         join_thread( tid, NULL );       // (wait for thread to end)
-#endif
+#if defined( OPTION_FTHREADS )
         detach_thread( tid );           // (wait for thread to end)
+#endif
     }
 
     pDEVBLK->fd = -1;           // indicate we're now closed

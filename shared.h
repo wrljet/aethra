@@ -1,12 +1,10 @@
-/* SHARED.H     (c)Copyright Greg Smith, 2002-2012                   */
-/*              Shared Device Server                                 */
+/* SHARED.H     Shared Device Server                                 */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright Greg Smith                     */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------
- * Shared device support           (c)Copyright Greg Smith, 2002-2009
+ * Shared device support
  *
  * Shared device support allows multiple Hercules instances to share
  * devices.  The device will be 'local' to one instance and 'remote'
@@ -332,7 +330,7 @@
 #define SHARED_PURGE_MAX           16   /* Max size of purge list    */
 #define SHARED_MAX_MSGLEN         255   /* Max message length        */
 #define SHARED_TIMEOUT            120   /* Disconnect timeout (sec)  */
-#define SHARED_SELECT_WAIT         10   /* Select timeout (sec)      */
+#define SHARED_SELECT_WAIT_MSECS   50   /* Select timeout (msecs)    */
 #define SHARED_COMPRESS_MINLEN    512   /* Min length for compression*/
 #define SHARED_MAX_SYS              8   /* Max number connections    */
 
@@ -493,7 +491,7 @@ static int     clientRequest (DEVBLK *dev, BYTE *buf, int len, int cmd,
                       int flags, int *code, int *status);
 static int     clientSend (DEVBLK *dev, BYTE *hdr, BYTE *buf, int buflen);
 static int     clientRecv (DEVBLK *dev, BYTE *hdr, BYTE *buf, int buflen);
-static int     recvData(int sock, BYTE *hdr, BYTE *buf, int buflen, int server);
+static int     recvData(int sock, BYTE *hdr, BYTE *buf, int buflen, bool server_req);
 static void    serverRequest (DEVBLK *dev, int ix, BYTE *hdr, BYTE *buf);
 static int     serverLocate (DEVBLK *dev, int id, int *avail);
 static int     serverId (DEVBLK *dev);
@@ -509,6 +507,8 @@ static void   *serverConnect (void *psock);
 static void    shrdhdrtrc( DEVBLK* dev, const char* msg, const BYTE* hdr,
                           const char* msg2 );
 static void    shrdtrc( DEVBLK* dev, const char* fmt, ... ) ATTR_PRINTF(2,3);
+static void    shrdgentrc(           const char* fmt, ... ) ATTR_PRINTF(1,2);
+static void    shrdtrclog_locked( const char* tracemsg );
 static const char* shrdcmd2str( const BYTE cmd );
 static void    shared_print_trace_table_locked();
 #endif /* _SHARED_C_ */
@@ -518,8 +518,10 @@ static void    shared_print_trace_table_locked();
 #define OBTAIN_SHRDLOCK()               obtain_lock(  &sysblk.shrdlock )
 #define RELEASE_SHRDLOCK()              release_lock( &sysblk.shrdlock )
 
-#define SHRDTRACE( fmt, ... )           shrdtrc( dev, fmt, ## __VA_ARGS__ )
-#define SHRDHDRTRACE( msg, hdr )        shrdhdrtrc( dev, msg, hdr, 0    )
+#define SHRDTRACE(    fmt, ... )        shrdtrc( dev, fmt, ## __VA_ARGS__ )
+#define SHRDGENTRACE( fmt, ... )        shrdgentrc(   fmt, ## __VA_ARGS__ )
+
+#define SHRDHDRTRACE(  msg, hdr )       shrdhdrtrc( dev, msg, hdr, 0    )
 #define SHRDHDRTRACE2( msg, hdr, msg2 ) shrdhdrtrc( dev, msg, hdr, msg2 )
 
 #define OBTAIN_SHRDTRACE_LOCK()         obtain_lock(  &sysblk.shrdtracelock )

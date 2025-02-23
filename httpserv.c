@@ -1,10 +1,9 @@
-/* HTTPSERV.C   (C) Copyright Jan Jaeger, 2002-2012                  */
-/*              (C) Copyright TurboHercules, SAS 2010-2011           */
-/*              Hercules HTTP Server for Console Ops                 */
+/* HTTPSERV.C   Hercules HTTP Server for Console Ops                 */
 /*                                                                   */
-/*   Released under "The Q Public License Version 1"                 */
-/*   (http://www.hercules-390.org/herclic.html) as modifications to  */
-/*   Hercules.                                                       */
+/*  SPDX-FileCopyrightText: Copyright the following contributors:    */
+/*  SPDX-FileContributor:   Jan Jaeger                               */
+/*  SPDX-FileContributor:   TurboHercules, SAS                       */
+/*  SPDX-License-Identifier: QPL-1.0                                 */
 
 /*-------------------------------------------------------------------*/
 /* This file contains all code required for the HTTP server,         */
@@ -878,7 +877,7 @@ struct timeval      timeout;            /* timeout value             */
     hdl_addshut("http_shutdown",http_shutdown, NULL);
 
     /* Set server thread priority; ignore any errors */
-    set_thread_priority( sysblk.srvprio);
+    SET_THREAD_PRIORITY( sysblk.srvprio, sysblk.qos_user_interactive );
 
     /* Display thread started message on control panel */
     LOG_THREAD_BEGIN( HTTP_SRVR_THREAD_NAME  );
