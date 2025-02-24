@@ -799,8 +799,9 @@ jobs:
         gsed -i -e "s/  sha256 \"[0-9a-f]\+\"/  sha256 \"$SHA256\"/" aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb
         #
         head aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb
-#       cp aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb aethra/packagers/macOS/Homebrew/Hercules-$HERCULES_VERSION-macOS-amd64.rb
-        cp aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb ${{env.ARTIFACT_DIR}}/Hercules-$HERCULES_VERSION-macOS-amd64.rb
+        # 
+        # cp aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb aethra/packagers/macOS/Homebrew/Hercules-$HERCULES_VERSION-macOS-amd64.rb
+        cp aethra/packagers/macOS/Homebrew/hercules-aethra-develop.rb $ARTIFACT_DIR/Hercules-$HERCULES_VERSION-macOS-amd64.rb
         #
         popd
 
