@@ -4,6 +4,7 @@ run-name: ${{ github.actor }} is doing a develop build
 # Build Hercules-Aethra from the latest commit
 # WRL 13 APR 2024
 # WRL 23 FEB 2025 - Update to upload-artifact v4
+# WRL 24 FEB 2025 - Update to download-artifact v4
 
 #        arch: [armv6l, armv7l, aarch64]
 #        - arch: armv6l
@@ -67,7 +68,7 @@ jobs:
         fetch-depth: 0
 
     - name: Download artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
 #     with:
 #       name: "release.zips"
 
