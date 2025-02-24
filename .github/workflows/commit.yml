@@ -806,14 +806,14 @@ jobs:
     - name: Upload macOS tarball
       uses: actions/upload-artifact@v4
       with:
-        name: "release.zips"
+        name: my-artifact-${{ matrix.runs-on }}
         path: "${{env.ARTIFACT_DIR}}/Hercules-${{env.HERCULES_VERSION}}-macOS-amd64.tar.gz"
 
     - name: Upload Homebrew formula
       uses: actions/upload-artifact@v4
       with:
+        name: my-artifact-${{ matrix.runs-on }}
         path: "aethra/packagers/macOS/Homebrew/Hercules-*.rb"
-        name: "release.zips"
 #     with:
 #       path: "${{env.WINDOWS_ZIPFILE}}"
 #       name: "release.zips"
@@ -959,7 +959,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         path: "${{env.WINDOWS_ZIPFILE}}"
-        name: "release.zips"
+        name: my-artifact-${{ matrix.runs-on }}
 
 ########
   build-arm:
