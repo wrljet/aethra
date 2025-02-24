@@ -76,7 +76,7 @@ jobs:
     - name: Download artifacts
       uses: actions/download-artifact@v4
 #     with:
-#       name: "release.zips"
+#       name: all-my-files
 
     - name: Set Title
       run: |
@@ -172,7 +172,7 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        ls -lh release.zips
+        ls -lh all-my-files
         echo "========================"
         gh release view "${{env.HERCULES_VERSION}}"
         #
@@ -1488,6 +1488,6 @@ jobs:
 #      uses: actions/upload-artifact@v4
 #      with:
 #        path: "/tmp/uploads/Hercules*.deb"
-#        name: "release.zips"
+#        name: all-my-files
 
 ### END ###
