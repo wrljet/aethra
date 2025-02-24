@@ -507,7 +507,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         path: "${{env.LINUX_DEBNAME}}"
-        name: "release-debian.zips"
+        name: "release-debian"
 
 ########
   build-macos:
@@ -813,7 +813,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: my-artifact-macos-2
-        path: "aethra/packagers/macOS/Homebrew/Hercules-*.rb"
+        path: "../aethra/packagers/macOS/Homebrew/Hercules-*.rb"
 
 ########
   build-windows:
