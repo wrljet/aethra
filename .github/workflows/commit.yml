@@ -67,11 +67,11 @@ jobs:
         # Default: 1
         fetch-depth: 0
 
-    -name: Merge Artifacts
+    - name: Merge Artifacts
       uses: actions/upload-artifact/merge@v4
       with:
-        name: all-my-files
-        pattern: my-artifact-*
+       name: all-my-files
+       pattern: artifact-*
 
     - name: Download artifacts
       uses: actions/download-artifact@v4
