@@ -507,7 +507,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         path: "${{env.LINUX_DEBNAME}}"
-        name: "release.zips"
+        name: "release-debian.zips"
 
 ########
   build-macos:
@@ -806,17 +806,14 @@ jobs:
     - name: Upload macOS tarball
       uses: actions/upload-artifact@v4
       with:
-        name: my-artifact-${{ matrix.runs-on }}
+        name: my-artifact-macos-1
         path: "${{env.ARTIFACT_DIR}}/Hercules-${{env.HERCULES_VERSION}}-macOS-amd64.tar.gz"
 
     - name: Upload Homebrew formula
       uses: actions/upload-artifact@v4
       with:
-        name: my-artifact-${{ matrix.runs-on }}
+        name: my-artifact-macos-2
         path: "aethra/packagers/macOS/Homebrew/Hercules-*.rb"
-#     with:
-#       path: "${{env.WINDOWS_ZIPFILE}}"
-#       name: "release.zips"
 
 ########
   build-windows:
@@ -959,7 +956,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         path: "${{env.WINDOWS_ZIPFILE}}"
-        name: my-artifact-${{ matrix.runs-on }}
+        name: my-artifact-windows
 
 ########
   build-arm:
