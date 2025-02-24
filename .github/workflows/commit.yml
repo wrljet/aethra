@@ -144,7 +144,7 @@ jobs:
 
     - name: Review binaries
       run: |
-        ls -lh all-my-files.zips
+        ls -lh all-my-files
         #echo "LINUX_TARBALL: ${{env.LINUX_TARBALL}}"
         #echo "LINUX_DEBNAME: ${{env.LINUX_DEBNAME}}"
 
@@ -152,10 +152,10 @@ jobs:
       uses: jmgilman/actions-generate-checksum@v1
       with:
         patterns: |
-          all-my-files.zips/*.deb
-          all-my-files.zips/*.zip
-          all-my-files.zips/*.tar.gz
-          all-my-files.zips/*.rb
+          all-my-files/*.deb
+          all-my-files/*.zip
+          all-my-files/*.tar.gz
+          all-my-files/*.rb
 
     - name: Attach Release Archive
       uses: wrljet/actions/packages/automatic-releases@built-packages
@@ -166,7 +166,7 @@ jobs:
         title: "${{env.TITLE}} ${{env.VERSION}}"
         files: |
           checksum.txt
-          all-my-files.zips
+          all-my-files
 
     - name: Update Release Notes
       env:
